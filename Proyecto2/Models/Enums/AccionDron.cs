@@ -7,6 +7,6 @@ namespace IPC2_Proyecto2.Models.Enums
         Subir,
         Bajar,
         Esperar,
-        Emitirluz,
+        EmitirLuz,
     }
 }

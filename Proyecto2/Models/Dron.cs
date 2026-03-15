@@ -25,7 +25,7 @@ namespace IPC2_Proyecto2.Models
         {
             set
             {
-                alturaActual= value;
+                alturaActual = value;
             }
             get
             {
@@ -69,7 +69,63 @@ namespace IPC2_Proyecto2.Models
             this.alturaActual = alturaInicial;
             EstaEmitiendo = false;
         }
-         // Acciones que puede realizar el dron
-         
+        // Acciones que puede realizar el dron
+        public void Subir()
+        {
+            if (AlturaActual < 100) //Límite máximo de 100 metros
+            {
+                AlturaActual++;
+            }
+            EstaEmitiendo = false;
+        }
+
+        public void Bajar()
+        {
+            if (AlturaActual > 1) //Límite mínimo de 1 metro
+            {
+                AlturaActual--;
+            }
+            EstaEmitiendo = false;
+        }
+        public void Esperar()
+        {
+            // No hace nada, solo permanece en la misma altura
+            EstaEmitiendo = false;
+        }
+
+        public void EmitirLuz()
+        {
+            EstaEmitiendo = true;
+        }
+        // Reiniciar a la altura inicial
+
+        public void Reiniciar()
+        {
+            AlturaActual = AlturaInicial;
+            EstaEmitiendo = false;
+        }
+
+        // Calcular distancia a una altura objetivo
+        public int DistanciaA(int alturaObjetivo)
+        {
+            return Math.Abs(AlturaActual - alturaObjetivo);
+        }
+
+        // Determinar qué acción hacer para llegar a una altura
+
+        public AccionDron AccionNecesaria(int alturaObjetivo)
+        {
+            if (AlturaActual < alturaObjetivo)
+                return AccionDron.Subir;
+            else if (AlturaActual > alturaObjetivo)
+                return AccionDron.Bajar;
+            else
+                return AccionDron.EmitirLuz; // Si ya está en la altura, emitir
+        }
+
+        public override string ToString()
+        {
+            return $"Dron: {Nombre}, Altura: {AlturaActual}m";
+        }
     }
 }
