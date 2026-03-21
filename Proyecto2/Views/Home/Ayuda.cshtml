@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Ayuda - Sistema de Drones";
+}
+
+<h2>Información del Estudiante</h2>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <h5 class="card-title">Desarrollador</h5>
+        <p class="card-text">
+            <strong>Nombre:</strong> [Nombre del Estudiante]<br />
+            <strong>Carnet:</strong> [Carnet]<br />
+            <strong>Curso:</strong> Introducción a la Programación y Computación 2<br />
+            <strong>Sección:</strong> [Sección]<br />
+            <strong>Fecha:</strong> @DateTime.Now.ToString("dd/MM/yyyy")
+        </p>
+    </div>
+</div>
+
+<h3>Documentación del Proyecto</h3>
+
+<div class="card">
+    <div class="card-body">
+        <h5 class="card-title">Enlaces de Interés</h5>
+        <ul>
+            <li>
+                <a href="https://github.com/[usuario]/IPC2_Proyecto2_[Carnet]" target="_blank">
+                    Repositorio en GitHub
+                </a>
+            </li>
+            <li>
+                <a href="/docs/DiagramaClases.pdf" target="_blank">
+                    Diagrama de Clases
+                </a>
+            </li>
+            <li>
+                <a href="/docs/ManualUsuario.pdf" target="_blank">
+                    Manual de Usuario
+                </a>
+            </li>
+        </ul>
+        
+        <h5 class="mt-3">Funcionalidades del Sistema</h5>
+        <ul>
+            <li><strong>Inicialización:</strong> Sistema listo sin información previa</li>
+            <li><strong>Cargar XML:</strong> Importar configuración desde archivo XML</li>
+            <li><strong>Gestión de Drones:</strong> CRUD de drones con nombres únicos</li>
+            <li><strong>Gestión de Sistemas:</strong> Visualización gráfica con Graphviz</li>
+            <li><strong>Gestión de Mensajes:</strong> Optimización de tiempo para transmisión</li>
+        </ul>
+        
+        <h5 class="mt-3">Tecnologías Utilizadas</h5>
+        <ul>
+            <li>.NET 8.0 con ASP.NET Core MVC</li>
+            <li>TDAs implementados manualmente (listas enlazadas)</li>
+            <li>Programación Orientada a Objetos</li>
+            <li>Graphviz para visualización</li>
+            <li>XML para entrada/salida de datos</li>
+        </ul>
+    </div>
+</div>

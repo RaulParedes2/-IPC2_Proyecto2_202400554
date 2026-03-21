@@ -1,0 +1,50 @@
+@using IPC2_Proyecto2_#Carnet.TDAs
+@model ListaDrones
+
+@{
+    ViewData["Title"] = "Gestión de Drones";
+}
+
+<h2>Gestión de Drones</h2>
+
+<div class="mb-3">
+    <a asp-action="Crear" class="btn btn-primary">Agregar Nuevo Dron</a>
+</div>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nombre</th>
+            <th>Altura Actual</th>
+            <th>Altura Inicial</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            NodoDron? actual = Model.GetPrimero();
+            while (actual != null)
+            {
+                <tr>
+                    <td>@actual.Data.Nombre</td>
+                    <td>@actual.Data.AlturaActual m</td>
+                    <td>@actual.Data.AlturaInicial m</td>
+                    <td>
+                        <form asp-action="Eliminar" method="post" style="display:inline">
+                            <input type="hidden" name="nombre" value="@actual.Data.Nombre" />
+                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este dron?')">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+                actual = actual.Siguiente;
+            }
+        }
+    </tbody>
+</table>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">
+        No hay drones registrados. <a asp-action="Crear">Agregue uno nuevo</a>
+    </div>
+}

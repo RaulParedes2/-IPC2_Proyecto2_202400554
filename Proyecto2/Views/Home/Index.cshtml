@@ -1,0 +1,71 @@
+@{
+    ViewData["Title"] = "Inicio - Sistema de Drones";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Sistema de Control de Drones</h1>
+    <p class="lead">Sistema para la transmisión de mensajes encriptados mediante drones</p>
+    
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Drones</h5>
+                    <p class="card-text display-4">@ViewBag.TotalDrones</p>
+                    <a asp-controller="Drones" asp-action="Index" class="btn btn-primary">Gestionar Drones</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Sistemas de Drones</h5>
+                    <p class="card-text display-4">@ViewBag.TotalSistemas</p>
+                    <a asp-controller="Sistemas" asp-action="Index" class="btn btn-primary">Gestionar Sistemas</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Mensajes</h5>
+                    <p class="card-text display-4">@ViewBag.TotalMensajes</p>
+                    <a asp-controller="Mensajes" asp-action="Index" class="btn btn-primary">Gestionar Mensajes</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-5">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Cargar Archivo XML</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Home" asp-action="CargarXML" method="post" enctype="multipart/form-data">
+                        <div class="mb-3">
+                            <input type="file" name="archivoXML" class="form-control" accept=".xml" />
+                        </div>
+                        <button type="submit" class="btn btn-success">Cargar Configuración</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Generar Reporte</h5>
+                </div>
+                <div class="card-body">
+                    <form asp-controller="Home" asp-action="GenerarXMLSalida" method="post">
+                        <button type="submit" class="btn btn-info">Generar XML de Salida</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
