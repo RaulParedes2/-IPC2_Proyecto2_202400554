@@ -1,6 +1,6 @@
-using IPC2_Proyecto2.TDAs;
+using Proyecto2.TDAs;
 
-namespace IPC2_Proyecto2.Models
+namespace Proyecto2.Models
 {
     public class SistemaDrones
     {

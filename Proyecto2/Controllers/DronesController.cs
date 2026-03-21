@@ -1,9 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
-using IPC2_Proyecto2.Services;
-using IPC2_Proyecto2.Models;
-using IPC2_Proyecto2.TDAs;
+using Proyecto2.Services;
+using Proyecto2.Models;
+using Proyecto2.TDAs;
 
-namespace IPC2_Proyecto2.Controllers
+namespace Proyecto2.Controllers
 {
     public class DronesController : Controller
     {

@@ -1,7 +1,7 @@
-using IPC2_Proyecto2.Models;
-using IPC2_Proyecto2.TDAs;
+using Proyecto2.Models;
+using Proyecto2.TDAs;
 
-namespace IPC2_Proyecto2.Services
+namespace Proyecto2.Services
 {
     public class Planificador
     {

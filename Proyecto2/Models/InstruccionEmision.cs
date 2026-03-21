@@ -1,4 +1,4 @@
-namespace IPC2_Proyecto2.Models
+namespace Proyecto2.Models
 {
     public class InstruccionEmision
     {

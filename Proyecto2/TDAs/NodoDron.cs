@@ -1,7 +1,7 @@
 using System;
-using IPC2_Proyecto2.Models;
+using Proyecto2.Models;
 
-namespace IPC2_Proyecto2.TDAs
+namespace Proyecto2.TDAs
 {
     public class NodoDron
     {

@@ -1,8 +1,9 @@
-using IPC2_Proyecto2.Models;
+using System;
+using Proyecto2.Models;
 
-namespace IPC2_Proyecto2.TDAs
+namespace Proyecto2.TDAs
 {
-     public class ListaSistemasDrones
+    public class ListaSistemasDrones
     {
         private NodoSistemaDrones? primero;
         private int count;

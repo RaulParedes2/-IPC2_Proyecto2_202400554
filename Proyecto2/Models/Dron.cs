@@ -1,7 +1,7 @@
 using System;
-using IPC2_Proyecto2.Models.Enums;
+using Proyecto2.Models.Enums;
 
-namespace IPC2_Proyecto2.Models
+namespace Proyecto2.Models
 {
     public class Dron
     {

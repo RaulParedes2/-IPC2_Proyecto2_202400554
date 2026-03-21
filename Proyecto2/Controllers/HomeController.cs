@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
-using IPC2_Proyecto2.Services;
+using Proyecto2.Services;
 
-namespace IPC2_Proyecto2.Controllers
+namespace Proyecto2.Controllers
 {
     public class HomeController : Controller
     {

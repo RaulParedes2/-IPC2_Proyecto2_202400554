@@ -1,6 +1,7 @@
-using IPC2_Proyecto2.Models;
+using System;
+using Proyecto2.Models;
 
-namespace IPC2_Proyecto2.TDAs
+namespace Proyecto2.TDAs
 {
     public class ListaMensajes
     {
@@ -158,7 +159,7 @@ namespace IPC2_Proyecto2.TDAs
             count++;
             return true;
         }
-
+        
         public void ParaCada(Action<Mensaje> accion)
         {
             NodoMensaje? actual = primero;
