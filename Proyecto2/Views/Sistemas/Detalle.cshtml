@@ -1,0 +1,172 @@
+@using Proyecto2.Models
+@using Proyecto2.TDAs
+@model SistemaDrones
+
+@{
+    ViewData["Title"] = $"Detalle - {Model.Nombre}";
+    ListaDrones dronesDisponibles = ViewBag.DronesDisponibles as ListaDrones ?? new ListaDrones();
+}
+
+<h2>Sistema: @Model.Nombre</h2>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row">
+    <!-- Columna de Drones -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Drones en el Sistema</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.Drones.Count == 0)
+                {
+                    <p class="text-muted">No hay drones en este sistema</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Altura Actual</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var dronActual = Model.Drones.GetPrimero();
+                                while (dronActual != null)
+                                {
+                                    <tr>
+                                        <td>@dronActual.Data.Nombre</td>
+                                        <td>@dronActual.Data.AlturaActual m</td>
+                                    </tr>
+                                    dronActual = dronActual.Siguiente;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+        
+        <!-- Agregar Dron al Sistema -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4>Agregar Dron al Sistema</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="AgregarDron" method="post">
+                    <input type="hidden" name="nombreSistema" value="@Model.Nombre" />
+                    <div class="mb-3">
+                        <label class="form-label">Seleccionar Dron</label>
+                        <select name="nombreDron" class="form-select" required>
+                            <option value="">-- Seleccione un dron --</option>
+                            @{
+                                var dronDisponible = dronesDisponibles.GetPrimero();
+                                while (dronDisponible != null)
+                                {
+                                    if (!Model.Drones.Existe(dronDisponible.Data.Nombre))
+                                    {
+                                        <option value="@dronDisponible.Data.Nombre">@dronDisponible.Data.Nombre</option>
+                                    }
+                                    dronDisponible = dronDisponible.Siguiente;
+                                }
+                            }
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-success">Agregar Dron</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Columna de Codificación -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Tabla de Codificación</h4>
+            </div>
+            <div class="card-body">
+                @if (Model.Codificacion.Count == 0)
+                {
+                    <p class="text-muted">No hay codificaciones configuradas</p>
+                }
+                else
+                {
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Dron</th>
+                                <th>Altura</th>
+                                <th>Letra</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{
+                                var celdaActual = Model.Codificacion.GetPrimero();
+                                while (celdaActual != null)
+                                {
+                                    <tr>
+                                        <td>@celdaActual.NombreDron</td>
+                                        <td>@celdaActual.Altura m</td>
+                                        <td><strong>'@celdaActual.Letra'</strong></td>
+                                    </tr>
+                                    celdaActual = celdaActual.Siguiente;
+                                }
+                            }
+                        </tbody>
+                    </table>
+                }
+            </div>
+        </div>
+        
+        <!-- Configurar Codificación -->
+        <div class="card mt-3">
+            <div class="card-header">
+                <h4>Configurar Codificación</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="ConfigurarCodificacion" method="post">
+                    <input type="hidden" name="nombreSistema" value="@Model.Nombre" />
+                    <div class="mb-3">
+                        <label class="form-label">Dron</label>
+                        <select name="nombreDron" class="form-select" required>
+                            <option value="">-- Seleccione un dron --</option>
+                            @{
+                                var dronSistema = Model.Drones.GetPrimero();
+                                while (dronSistema != null)
+                                {
+                                    <option value="@dronSistema.Data.Nombre">@dronSistema.Data.Nombre</option>
+                                    dronSistema = dronSistema.Siguiente;
+                                }
+                            }
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Altura (1-100)</label>
+                        <input type="number" name="altura" class="form-control" min="1" max="100" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Letra</label>
+                        <input type="text" name="letra" class="form-control" maxlength="1" required />
+                        <small class="form-text text-muted">Un solo carácter</small>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Configurar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="mt-3">
+    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+    <a asp-action="GraficoPNG" asp-route-nombre="@Model.Nombre" class="btn btn-info">Ver Gráfico (PNG)</a>
+</div>

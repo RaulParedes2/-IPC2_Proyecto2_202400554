@@ -5,7 +5,6 @@ namespace Proyecto2.TDAs
 {
     public class TablaCodificacion
     {
-        // Hacemos la clase interna pública para que pueda ser accesible
         public class CeldaCodificacion
         {
             public string NombreDron { get; set; }
@@ -33,7 +32,6 @@ namespace Proyecto2.TDAs
 
         public void Agregar(string nombreDron, int altura, char letra)
         {
-            // Verificar si ya existe la combinación
             if (ExisteCombinacion(nombreDron, altura))
                 return;
 
@@ -64,7 +62,7 @@ namespace Proyecto2.TDAs
                     return actual.Letra;
                 actual = actual.Siguiente;
             }
-            return '?'; // Carácter no encontrado
+            return '?';
         }
 
         public bool ExisteCombinacion(string nombreDron, int altura)
@@ -79,27 +77,8 @@ namespace Proyecto2.TDAs
             return false;
         }
 
-        public ListaDrones? ObtenerDronesConLetra(char letra)
-        {
-            ListaDrones? dronesConLetra = new ListaDrones();
-            CeldaCodificacion? actual = primera;
-
-            while (actual != null)
-            {
-                if (actual.Letra == letra)
-                {
-                    // Aquí solo tenemos el nombre del dron, necesitamos el objeto Dron
-                    // Este método se usará en conjunto con un sistema de drones
-                }
-                actual = actual.Siguiente;
-            }
-
-            return dronesConLetra;
-        }
-
         public int Count { get { return count; } }
 
-        // Cambiamos el tipo de retorno a publico
         public CeldaCodificacion? GetPrimero()
         {
             return primera;
@@ -111,7 +90,6 @@ namespace Proyecto2.TDAs
             count = 0;
         }
 
-        // Método para recorrer todas las celdas
         public void ParaCada(Action<CeldaCodificacion> accion)
         {
             CeldaCodificacion? actual = primera;
@@ -120,43 +98,6 @@ namespace Proyecto2.TDAs
                 accion(actual);
                 actual = actual.Siguiente;
             }
-        }
-
-        // Método para obtener todas las combinaciones como string
-        public string ObtenerListadoComoString()
-        {
-            string resultado = "";
-            CeldaCodificacion? actual = primera;
-            while (actual != null)
-            {
-                resultado += $"{actual.NombreDron} a {actual.Altura}m = '{actual.Letra}'";
-                if (actual.Siguiente != null)
-                    resultado += "\n";
-                actual = actual.Siguiente;
-            }
-            return resultado;
-        }
-
-        // Método para obtener las letras disponibles para un dron específico
-        public ListaInstruccionesEmision? ObtenerInstruccionesPorDron(string nombreDron)
-        {
-            ListaInstruccionesEmision instrucciones = new ListaInstruccionesEmision();
-            CeldaCodificacion? actual = primera;
-
-            while (actual != null)
-            {
-                if (actual.NombreDron == nombreDron)
-                {
-                    instrucciones.Agregar(new InstruccionEmision(
-                        actual.NombreDron,
-                        actual.Altura,
-                        actual.Letra
-                    ));
-                }
-                actual = actual.Siguiente;
-            }
-
-            return instrucciones;
         }
     }
 }

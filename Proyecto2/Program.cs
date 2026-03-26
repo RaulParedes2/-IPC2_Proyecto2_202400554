@@ -1,11 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Xml;
 using Proyecto2.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,11 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
-// Registrar servicios como Singleton para mantener estado entre requests
+// Registrar servicios
 builder.Services.AddSingleton<GestorDrones>();
 builder.Services.AddSingleton<GestorSistemas>();
 builder.Services.AddSingleton<GestorMensajes>();
 builder.Services.AddSingleton<Planificador>();
+builder.Services.AddSingleton<GraphvizService>();
 
 var app = builder.Build();
 

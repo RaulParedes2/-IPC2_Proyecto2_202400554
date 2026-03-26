@@ -1,0 +1,21 @@
+@{
+    ViewData["Title"] = "Crear Sistema de Drones";
+}
+
+<h2>Crear Nuevo Sistema de Drones</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Crear" method="post">
+    <div class="mb-3">
+        <label class="form-label">Nombre del Sistema</label>
+        <input type="text" name="nombre" class="form-control" required />
+        <small class="form-text text-muted">Ejemplo: SistemaEjercito, SistemaDefensa, etc.</small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

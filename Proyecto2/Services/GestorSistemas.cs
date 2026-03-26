@@ -74,5 +74,10 @@ namespace Proyecto2.Services
 
             return sistema.Drones;
         }
+
+        public bool Eliminar(string nombre)
+        {
+            return sistemas.Eliminar(nombre);
+        }
     }
 }

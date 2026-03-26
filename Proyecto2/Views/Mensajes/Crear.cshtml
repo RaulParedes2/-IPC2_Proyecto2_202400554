@@ -1,0 +1,29 @@
+@using Proyecto2.TDAs
+@{
+    ViewData["Title"] = "Crear Mensaje";
+    ListaSistemasDrones sistemas = ViewBag.Sistemas as ListaSistemasDrones ?? new ListaSistemasDrones();
+}
+
+<h2>Crear Nuevo Mensaje</h2>
+
+@if (ViewBag.Error != null)
+{
+    <div class="alert alert-danger">@ViewBag.Error</div>
+}
+
+<form asp-action="Crear" method="post">
+    <div class="mb-3">
+        <label class="form-label">Nombre del Mensaje</label>
+        <input type="text" name="nombre" class="form-control" required />
+        <small class="form-text text-muted">Ejemplo: MensajeSaludo, MensajePrueba, etc.</small>
+    </div>
+    
+    <div class="mb-3">
+        <label class="form-label">Texto Original</label>
+        <textarea name="textoOriginal" class="form-control" rows="3" placeholder="Ejemplo: HOLA MUNDO"></textarea>
+        <small class="form-text text-muted">Opcional, puede agregar instrucciones después</small>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Guardar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

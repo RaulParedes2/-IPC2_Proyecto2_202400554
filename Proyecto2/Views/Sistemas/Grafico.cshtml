@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = $"Gráfico - {ViewBag.NombreSistema}";
+    string dotCode = ViewBag.DotCode ?? "";
+}
+
+<h2>Gráfico del Sistema: @ViewBag.NombreSistema</h2>
+
+<div class="mb-3">
+    <a asp-action="Detalle" asp-route-nombre="@ViewBag.NombreSistema" class="btn btn-secondary">Volver al Detalle</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Visualización con Graphviz</h4>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <strong>Instrucciones:</strong> Copia el código DOT y pégalo en 
+            <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a>
+            para visualizar el gráfico.
+        </div>
+        
+        <h5>Código DOT:</h5>
+        <pre class="bg-light p-3" style="overflow-x: auto;">@dotCode</pre>
+        
+        <button class="btn btn-primary" onclick="copiarAlPortapapeles()">Copiar código</button>
+    </div>
+</div>
+
+<script>
+    function copiarAlPortapapeles() {
+        const codigo = document.querySelector('pre').innerText;
+        navigator.clipboard.writeText(codigo).then(() => {
+            alert('Código copiado al portapapeles');
+        });
+    }
+</script>

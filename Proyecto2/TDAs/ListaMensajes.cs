@@ -92,7 +92,7 @@ namespace Proyecto2.TDAs
         public ListaMensajes ObtenerOrdenadosAlfabeticamente()
         {
             ListaMensajes ordenada = new ListaMensajes();
-
+            
             if (primero == null)
                 return ordenada;
 
@@ -100,7 +100,7 @@ namespace Proyecto2.TDAs
             while (actual != null)
             {
                 Mensaje mensajeActual = actual.Data;
-
+                
                 if (ordenada.primero == null)
                 {
                     ordenada.Agregar(mensajeActual);
@@ -110,7 +110,7 @@ namespace Proyecto2.TDAs
                     NodoMensaje? actualOrdenada = ordenada.primero;
                     int posicion = 0;
                     bool insertado = false;
-
+                    
                     while (actualOrdenada != null && !insertado)
                     {
                         if (string.Compare(mensajeActual.Nombre, actualOrdenada.Data.Nombre) < 0)
@@ -121,13 +121,13 @@ namespace Proyecto2.TDAs
                         actualOrdenada = actualOrdenada.Siguiente;
                         posicion++;
                     }
-
+                    
                     if (!insertado)
                     {
                         ordenada.Agregar(mensajeActual);
                     }
                 }
-
+                
                 actual = actual.Siguiente;
             }
 
@@ -159,7 +159,7 @@ namespace Proyecto2.TDAs
             count++;
             return true;
         }
-        
+
         public void ParaCada(Action<Mensaje> accion)
         {
             NodoMensaje? actual = primero;
@@ -171,7 +171,7 @@ namespace Proyecto2.TDAs
         }
 
         public int Count { get { return count; } }
-
+        
         public bool EstaVacia { get { return count == 0; } }
 
         public NodoMensaje? GetPrimero()

@@ -1,0 +1,88 @@
+@{
+    ViewData["Title"] = $"Gráfico - {ViewBag.NombreSistema}";
+    string imagenPath = ViewBag.ImagenPath ?? "";
+    string dotCode = ViewBag.DotCode ?? "";
+}
+
+<h2>Gráfico del Sistema: @ViewBag.NombreSistema</h2>
+
+<div class="mb-3">
+    <a asp-action="Detalle" asp-route-nombre="@ViewBag.NombreSistema" class="btn btn-secondary">Volver al Detalle</a>
+    <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
+    <a asp-action="GraficoPNG" asp-route-nombre="@ViewBag.NombreSistema" class="btn btn-primary">Actualizar Gráfico</a>
+</div>
+
+@if (!string.IsNullOrEmpty(imagenPath))
+{
+    // Verificar si el archivo existe
+    string fullPath = System.IO.Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", imagenPath.TrimStart('/'));
+    if (System.IO.File.Exists(fullPath))
+    {
+        <div class="card">
+            <div class="card-header">
+                <h4>Visualización del Sistema</h4>
+            </div>
+            <div class="card-body text-center">
+                <img src="@imagenPath" alt="Gráfico del sistema" class="img-fluid" style="max-width: 100%;" />
+            </div>
+            <div class="card-footer text-muted">
+                <small>Imagen generada con Graphviz</small>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-warning">
+            <h5>Imagen no encontrada</h5>
+            <p>La imagen no pudo ser generada. Por favor, intenta nuevamente.</p>
+        </div>
+        
+        @if (!string.IsNullOrEmpty(dotCode))
+        {
+            <div class="card mt-3">
+                <div class="card-header">
+                    <h5>Código DOT para Graphviz Online</h5>
+                </div>
+                <div class="card-body">
+                    <p>Puedes copiar este código y pegarlo en 
+                    <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a></p>
+                    <pre class="bg-light p-3" style="overflow-x: auto;">@dotCode</pre>
+                    <button class="btn btn-secondary" onclick="copiarAlPortapapeles()">Copiar código</button>
+                </div>
+            </div>
+        }
+    }
+}
+else
+{
+    <div class="alert alert-warning">
+        <h5>No se pudo generar la imagen</h5>
+        <p>Verifica que Graphviz esté instalado en tu sistema. Puedes descargarlo desde 
+        <a href="https://graphviz.org/download/" target="_blank">https://graphviz.org/download/</a></p>
+        <p>Después de instalar, asegúrate de agregar Graphviz al PATH del sistema y reiniciar.</p>
+    </div>
+    
+    @if (!string.IsNullOrEmpty(dotCode))
+    {
+        <div class="card mt-3">
+            <div class="card-header">
+                <h5>Código DOT para Graphviz Online</h5>
+            </div>
+            <div class="card-body">
+                <p>Si prefieres, puedes copiar este código y pegarlo en 
+                <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a></p>
+                <pre class="bg-light p-3" style="overflow-x: auto;">@dotCode</pre>
+                <button class="btn btn-secondary" onclick="copiarAlPortapapeles()">Copiar código</button>
+            </div>
+        </div>
+    }
+}
+
+<script>
+    function copiarAlPortapapeles() {
+        const codigo = document.querySelector('pre').innerText;
+        navigator.clipboard.writeText(codigo).then(() => {
+            alert('Código copiado al portapapeles');
+        });
+    }
+</script>

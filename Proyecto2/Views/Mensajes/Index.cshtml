@@ -1,0 +1,59 @@
+@using Proyecto2.TDAs
+@model ListaMensajes
+
+@{
+    ViewData["Title"] = "Mensajes";
+}
+
+<h2>Gestión de Mensajes</h2>
+
+<div class="mb-3">
+    <a asp-action="Crear" class="btn btn-primary">Crear Nuevo Mensaje</a>
+</div>
+
+@if (TempData["Mensaje"] != null)
+{
+    <div class="alert alert-success">@TempData["Mensaje"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-info">
+        No hay mensajes registrados. <a asp-action="Crear">Cree uno nuevo</a>
+    </div>
+}
+else
+{
+    <div class="row">
+        @{
+            var actual = Model.GetPrimero();
+            while (actual != null)
+            {
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">@actual.Data.Nombre</h5>
+                            <p class="card-text">
+                                <strong>Texto:</strong> @actual.Data.TextoOriginal<br />
+                                <strong>Instrucciones:</strong> @actual.Data.Instrucciones.Count
+                            </p>
+                            <div class="btn-group" role="group">
+                                <a asp-action="Detalle" asp-route-nombre="@actual.Data.Nombre" class="btn btn-info btn-sm">Detalle</a>
+                                <a asp-action="GraficoPlan" asp-route-nombre="@actual.Data.Nombre" class="btn btn-secondary btn-sm">Ver Gráfico</a>
+                                <form asp-action="Eliminar" method="post" style="display:inline">
+                                    <input type="hidden" name="nombre" value="@actual.Data.Nombre" />
+                                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Eliminar este mensaje?')">Eliminar</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                actual = actual.Siguiente;
+            }
+        }
+    </div>
+}

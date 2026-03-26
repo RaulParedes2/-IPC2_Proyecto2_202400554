@@ -1,0 +1,47 @@
+@{
+    ViewData["Title"] = "Gráfico del Plan de Vuelo";
+    string dotCode = ViewBag.DotCode as string ?? "";
+    string nombreMensaje = ViewBag.NombreMensaje as string ?? "";
+    string nombreSistema = ViewBag.NombreSistema as string ?? "";
+    int tiempoOptimo = ViewBag.TiempoOptimo ?? 0;
+}
+
+<h2>Gráfico del Plan de Vuelo</h2>
+
+<div class="card mb-3">
+    <div class="card-header">
+        <h4>Resumen</h4>
+    </div>
+    <div class="card-body">
+        <p><strong>Mensaje:</strong> @nombreMensaje</p>
+        <p><strong>Sistema:</strong> @nombreSistema</p>
+        <p><strong>Tiempo Óptimo:</strong> @tiempoOptimo segundos</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h4>Código DOT para Graphviz</h4>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-info">
+            <strong>Instrucciones:</strong> Copia el código y pégalo en 
+            <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a>
+            para visualizar el gráfico.
+        </div>
+        
+        <pre class="bg-light p-3" style="overflow-x: auto; max-height: 400px;">@dotCode</pre>
+        
+        <button class="btn btn-primary" onclick="copiarAlPortapapeles()">Copiar código</button>
+        <a asp-action="GraficoPlan" asp-route-nombre="@nombreMensaje" class="btn btn-secondary">Volver</a>
+    </div>
+</div>
+
+<script>
+    function copiarAlPortapapeles() {
+        const codigo = document.querySelector('pre').innerText;
+        navigator.clipboard.writeText(codigo).then(() => {
+            alert('Código copiado al portapapeles');
+        });
+    }
+</script>
