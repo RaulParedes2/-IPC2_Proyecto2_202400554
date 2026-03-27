@@ -45,5 +45,17 @@ namespace Proyecto2.Models
         {
             return Drones.ObtenerPorNombre(nombreDron);
         }
+
+        // Método para validar si una instrucción existe en la tabla de codificación
+        public bool ValidarInstruccion(string nombreDron, int altura)
+        {
+            return Codificacion.ExisteCombinacion(nombreDron, altura);
+        }
+
+        // Método para validar si un dron existe en el sistema
+        public bool ValidarDron(string nombreDron)
+        {
+            return Drones.Existe(nombreDron);
+        }
     }
 }

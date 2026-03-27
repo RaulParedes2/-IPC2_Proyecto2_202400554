@@ -12,7 +12,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Drones</h5>
                     <p class="card-text display-4">@ViewBag.TotalDrones</p>
-                    <a asp-controller="Drones" asp-action="Index" class="btn btn-primary">Gestionar Drones</a>
+                    <a href="/Drones/Index" class="btn btn-primary">Gestionar Drones</a>
                 </div>
             </div>
         </div>
@@ -22,7 +22,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Sistemas de Drones</h5>
                     <p class="card-text display-4">@ViewBag.TotalSistemas</p>
-                    <a asp-controller="Sistemas" asp-action="Index" class="btn btn-primary">Gestionar Sistemas</a>
+                    <a href="/Sistemas/Index" class="btn btn-primary">Gestionar Sistemas</a>
                 </div>
             </div>
         </div>
@@ -32,7 +32,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Mensajes</h5>
                     <p class="card-text display-4">@ViewBag.TotalMensajes</p>
-                    <a asp-controller="Mensajes" asp-action="Index" class="btn btn-primary">Gestionar Mensajes</a>
+                    <a href="/Mensajes/Index" class="btn btn-primary">Gestionar Mensajes</a>
                 </div>
             </div>
         </div>
@@ -45,9 +45,20 @@
                     <h5>Cargar Archivo XML</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-controller="Home" asp-action="CargarXML" method="post" enctype="multipart/form-data">
+                    @if (TempData["Mensaje"] != null)
+                    {
+                        <div class="alert alert-success">@TempData["Mensaje"]</div>
+                    }
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger">@TempData["Error"]</div>
+                    }
+                    <form action="/CargarXML" method="post" enctype="multipart/form-data">
+                        @Html.AntiForgeryToken()
                         <div class="mb-3">
-                            <input type="file" name="archivoXML" class="form-control" accept=".xml" />
+                            <label class="form-label">Seleccionar archivo XML</label>
+                            <input type="file" name="archivoXML" class="form-control" accept=".xml" required />
+                            <small class="form-text text-muted">Archivo XML con la configuración de drones, sistemas y mensajes</small>
                         </div>
                         <button type="submit" class="btn btn-success">Cargar Configuración</button>
                     </form>
@@ -61,11 +72,95 @@
                     <h5>Generar Reporte</h5>
                 </div>
                 <div class="card-body">
-                    <form asp-controller="Home" asp-action="GenerarXMLSalida" method="post">
+                    @if (ViewBag.TotalSistemas == 0)
+                    {
+                        <div class="alert alert-warning">
+                            No hay sistemas de drones disponibles. 
+                            <a href="/Sistemas/Crear">Cree uno</a> o cargue un archivo XML.
+                        </div>
+                    }
+                    <form action="/GenerarXMLSalida" method="post">
+                        @Html.AntiForgeryToken()
+                        <div class="mb-3">
+                            <label class="form-label">Sistema de Drones</label>
+                            <select name="nombreSistema" class="form-select">
+                                <option value="">-- Seleccione un sistema --</option>
+                                @{
+                                    var sistemas = ViewBag.SistemasDisponibles as Proyecto2.TDAs.ListaSistemasDrones;
+                                    if (sistemas != null)
+                                    {
+                                        var actual = sistemas.GetPrimero();
+                                        while (actual != null)
+                                        {
+                                            <option value="@actual.Data.Nombre">@actual.Data.Nombre</option>
+                                            actual = actual.Siguiente;
+                                        }
+                                    }
+                                }
+                            </select>
+                            <small class="form-text text-muted">Dejar en blanco para usar el primer sistema</small>
+                        </div>
                         <button type="submit" class="btn btn-info">Generar XML de Salida</button>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    
+    <!-- Accesos Rápidos con enlaces HTML directos -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4>Accesos Rápidos</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/Drones/Index" class="btn btn-outline-primary w-100 py-3" style="text-decoration: none;">
+                                Gestionar Drones
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/Sistemas/Index" class="btn btn-outline-success w-100 py-3" style="text-decoration: none;">
+                                estionar Sistemas
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/Mensajes/Index" class="btn btn-outline-info w-100 py-3" style="text-decoration: none;">
+                                Gestionar Mensajes
+                            </a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/Home/Ayuda" class="btn btn-outline-secondary w-100 py-3" style="text-decoration: none;">
+                                Ayuda
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<style>
+    .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+    .btn-outline-success:hover {
+        background-color: #198754;
+        color: white;
+    }
+    .btn-outline-info:hover {
+        background-color: #0dcaf0;
+        color: white;
+    }
+    .btn-outline-secondary:hover {
+        background-color: #6c757d;
+        color: white;
+    }
+    .btn {
+        transition: all 0.3s ease;
+    }
+</style>

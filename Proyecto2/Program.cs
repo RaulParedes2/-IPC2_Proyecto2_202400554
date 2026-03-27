@@ -8,12 +8,23 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+// Agregar soporte para sesión
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Registrar servicios
 builder.Services.AddSingleton<GestorDrones>();
 builder.Services.AddSingleton<GestorSistemas>();
 builder.Services.AddSingleton<GestorMensajes>();
 builder.Services.AddSingleton<Planificador>();
 builder.Services.AddSingleton<GraphvizService>();
+builder.Services.AddSingleton<LectorXML>();
+builder.Services.AddSingleton<GeneradorXML>();
 
 var app = builder.Build();
 
@@ -27,6 +38,7 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+app.UseSession(); // Habilitar sesión
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -12,7 +12,7 @@ namespace Proyecto2.Services
 
         public GraphvizService(IWebHostEnvironment webHostEnvironment)
         {
-            _wwwrootPath = webHostEnvironment.WebRootPath ?? Directory.GetCurrentDirectory() + "/wwwroot";
+            _wwwrootPath = webHostEnvironment.WebRootPath ?? Path.Combine(Directory.GetCurrentDirectory(), "wwwroot");
             _graphvizPath = FindGraphvizPath();
         }
 
@@ -34,7 +34,6 @@ namespace Proyecto2.Services
                 }
             }
 
-            // Si no se encuentra, retornar "dot" para intentar usar el PATH
             return "dot";
         }
 
@@ -66,21 +65,19 @@ namespace Proyecto2.Services
                     RedirectStandardError = true
                 };
 
-                using (Process process = Process.Start(startInfo))
+                using (Process? process = Process.Start(startInfo))
                 {
-                    if (process != null)
+                    if (process == null)
                     {
-                        process.WaitForExit();
-                        string error = process.StandardError.ReadToEnd();
-
-                        if (process.ExitCode != 0)
-                        {
-                            Console.WriteLine($"Error al generar imagen: {error}");
-                            return null;
-                        }
+                        return null;
                     }
-                    else
+                    
+                    process.WaitForExit();
+                    string? error = process.StandardError.ReadToEnd();
+
+                    if (process.ExitCode != 0)
                     {
+                        Console.WriteLine($"Error al generar imagen: {error}");
                         return null;
                     }
                 }
@@ -107,7 +104,6 @@ namespace Proyecto2.Services
             {
                 try
                 {
-                    // Eliminar archivos con más de 1 hora
                     foreach (var file in Directory.GetFiles(tempFolder))
                     {
                         var fileInfo = new FileInfo(file);

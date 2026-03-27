@@ -10,36 +10,64 @@
 <h2>Resultado del Envío</h2>
 
 <div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header">
-                <h4>Resumen</h4>
+    <div class="col-md-5">
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h4>Resumen del Envío</h4>
             </div>
             <div class="card-body">
-                <p><strong>Mensaje:</strong> @nombreMensaje</p>
-                <p><strong>Sistema:</strong> @nombreSistema</p>
-                <p><strong>Tiempo Óptimo:</strong> @tiempoOptimo segundos</p>
-                <p><strong>Mensaje Recibido:</strong> @mensajeRecibido</p>
+                <table class="table table-borderless">
+                    <tr>
+                        <th style="width: 150px">Mensaje:</th>
+                        <td><strong>@nombreMensaje</strong></td>
+                    </tr>
+                    <tr>
+                        <th>Sistema:</th>
+                        <td>@nombreSistema</td>
+                    </tr>
+                    <tr>
+                        <th>Tiempo Óptimo:</th>
+                        <td><span class="badge bg-success fs-6">@tiempoOptimo segundos</span></td>
+                    </tr>
+                    <tr>
+                        <th>Mensaje Recibido:</th>
+                        <td><code class="fs-5">@mensajeRecibido</code></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4>Acciones</h4>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="GraficoPlan" asp-route-nombre="@nombreMensaje" class="btn btn-primary">
+                        Ver Gráfico del Plan
+                    </a>
+                    <a asp-action="Detalle" asp-route-nombre="@nombreMensaje" class="btn btn-secondary">
+                        Volver al Detalle
+                    </a>
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        Ver todos los Mensajes
+                    </a>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="col-md-6">
+    <div class="col-md-7">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-dark text-white">
                 <h4>XML de Salida</h4>
             </div>
             <div class="card-body">
-                <pre class="bg-light p-3" style="overflow-x: auto; max-height: 400px;">@planVuelo</pre>
-                <button class="btn btn-primary mt-2" onclick="copiarAlPortapapeles()">Copiar XML</button>
+                <pre class="bg-light p-3" style="overflow-x: auto; max-height: 500px; font-size: 12px;">@planVuelo</pre>
+                <button class="btn btn-success mt-2" onclick="copiarAlPortapapeles()">Copiar XML</button>
             </div>
         </div>
     </div>
-</div>
-
-<div class="mt-3">
-    <a asp-action="Index" class="btn btn-secondary">Volver a Mensajes</a>
-    <a asp-action="Detalle" asp-route-nombre="@nombreMensaje" class="btn btn-info">Ver Detalle</a>
 </div>
 
 <script>

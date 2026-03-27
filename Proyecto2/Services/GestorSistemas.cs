@@ -75,9 +75,33 @@ namespace Proyecto2.Services
             return sistema.Drones;
         }
 
+        public void VerificarCodificacion(string nombreSistema)
+        {
+            SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
+            if (sistema != null)
+            {
+                Console.WriteLine($"=== Codificación del sistema: {nombreSistema} ===");
+                var celda = sistema.Codificacion.GetPrimero();
+                while (celda != null)
+                {
+                    Console.WriteLine($"{celda.NombreDron} a {celda.Altura}m = '{celda.Letra}'");
+                    celda = celda.Siguiente;
+                }
+            }
+        }
+
         public bool Eliminar(string nombre)
         {
             return sistemas.Eliminar(nombre);
+        }
+
+        public bool ExisteSistema(string nombre)
+        {
+            return sistemas.Existe(nombre);
+        }
+        public int CantidadSistemas()
+        {
+            return sistemas.Count;
         }
     }
 }

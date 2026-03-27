@@ -12,6 +12,7 @@ namespace Proyecto2.Services
             drones = new ListaDrones();
 
              //------------------------------------// Agregar algunos drones de ejemplo
+             /*
             InicializarDronesEjemplo();
         }
         private void InicializarDronesEjemplo()
@@ -25,7 +26,9 @@ namespace Proyecto2.Services
             }
         }
         //-----------------------------------------------------------------------------
-
+        
+        */
+        }
         public ListaDrones ObtenerTodos()
         {
             return drones.ObtenerOrdenadosAlfabeticamente();
@@ -52,6 +55,11 @@ namespace Proyecto2.Services
         public bool ExisteDron(string nombre)
         {
             return drones.Existe(nombre);
+        }
+
+         public int CantidadDrones()
+        {
+            return drones.Count;
         }
 
 

@@ -22,7 +22,7 @@
     <!-- Columna de Drones -->
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-primary text-white">
                 <h4>Drones en el Sistema</h4>
             </div>
             <div class="card-body">
@@ -45,7 +45,7 @@
                                 while (dronActual != null)
                                 {
                                     <tr>
-                                        <td>@dronActual.Data.Nombre</td>
+                                        <td><strong>@dronActual.Data.Nombre</strong></td>
                                         <td>@dronActual.Data.AlturaActual m</td>
                                     </tr>
                                     dronActual = dronActual.Siguiente;
@@ -59,11 +59,12 @@
         
         <!-- Agregar Dron al Sistema -->
         <div class="card mt-3">
-            <div class="card-header">
+            <div class="card-header bg-success text-white">
                 <h4>Agregar Dron al Sistema</h4>
             </div>
             <div class="card-body">
-                <form asp-action="AgregarDron" method="post">
+                <form action="/Sistemas/AgregarDron" method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="nombreSistema" value="@Model.Nombre" />
                     <div class="mb-3">
                         <label class="form-label">Seleccionar Dron</label>
@@ -91,18 +92,20 @@
     <!-- Columna de Codificación -->
     <div class="col-md-6">
         <div class="card">
-            <div class="card-header">
+            <div class="card-header bg-info text-white">
                 <h4>Tabla de Codificación</h4>
             </div>
             <div class="card-body">
                 @if (Model.Codificacion.Count == 0)
                 {
-                    <p class="text-muted">No hay codificaciones configuradas</p>
+                    <div class="alert alert-warning">
+                        No hay codificaciones configuradas
+                    </div>
                 }
                 else
                 {
-                    <table class="table table-sm">
-                        <thead>
+                    <table class="table table-sm table-bordered">
+                        <thead class="table-dark">
                             <tr>
                                 <th>Dron</th>
                                 <th>Altura</th>
@@ -115,9 +118,9 @@
                                 while (celdaActual != null)
                                 {
                                     <tr>
-                                        <td>@celdaActual.NombreDron</td>
+                                        <td><strong>@celdaActual.NombreDron</strong></td>
                                         <td>@celdaActual.Altura m</td>
-                                        <td><strong>'@celdaActual.Letra'</strong></td>
+                                        <td><span class="badge bg-primary fs-6">'@celdaActual.Letra'</span></td>
                                     </tr>
                                     celdaActual = celdaActual.Siguiente;
                                 }
@@ -130,11 +133,12 @@
         
         <!-- Configurar Codificación -->
         <div class="card mt-3">
-            <div class="card-header">
+            <div class="card-header bg-warning">
                 <h4>Configurar Codificación</h4>
             </div>
             <div class="card-body">
-                <form asp-action="ConfigurarCodificacion" method="post">
+                <form action="/Sistemas/ConfigurarCodificacion" method="post">
+                    @Html.AntiForgeryToken()
                     <input type="hidden" name="nombreSistema" value="@Model.Nombre" />
                     <div class="mb-3">
                         <label class="form-label">Dron</label>
@@ -157,7 +161,6 @@
                     <div class="mb-3">
                         <label class="form-label">Letra</label>
                         <input type="text" name="letra" class="form-control" maxlength="1" required />
-                        <small class="form-text text-muted">Un solo carácter</small>
                     </div>
                     <button type="submit" class="btn btn-primary">Configurar</button>
                 </form>
@@ -167,6 +170,6 @@
 </div>
 
 <div class="mt-3">
-    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
-    <a asp-action="GraficoPNG" asp-route-nombre="@Model.Nombre" class="btn btn-info">Ver Gráfico (PNG)</a>
+    <a href="/Sistemas/Index" class="btn btn-secondary">← Volver a la lista</a>
+    <a href="/Sistemas/GraficoPNG?nombre=@Model.Nombre" class="btn btn-info">Ver Gráfico</a>
 </div>

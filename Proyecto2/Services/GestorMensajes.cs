@@ -57,5 +57,40 @@ namespace Proyecto2.Services
 
             return mensaje.Instrucciones;
         }
+
+        public bool ExisteMensaje(string nombre)
+        {
+            return mensajes.Existe(nombre);
+        }
+
+        public int CantidadMensajes()
+        {
+            return mensajes.Count;
+        }
+
+        public string ObtenerTextoDesdeInstrucciones(string nombreMensaje, GestorSistemas gestorSistemas)
+        {
+            Mensaje? mensaje = mensajes.ObtenerPorNombre(nombreMensaje);
+            if (mensaje == null) return "";
+
+            string resultado = "";
+            NodoInstruccionEmision? actual = mensaje.Instrucciones.GetPrimero();
+
+            // Necesitamos un sistema para decodificar, usamos el primero disponible
+            var sistemas = gestorSistemas.ObtenerTodos();
+            if (sistemas.GetPrimero() != null)
+            {
+                SistemaDrones? sistema = sistemas.GetPrimero()!.Data;
+
+                while (actual != null)
+                {
+                    char letra = sistema.ObtenerLetra(actual.Data.NombreDron, actual.Data.AlturaObjetivo);
+                    resultado += letra;
+                    actual = actual.Siguiente;
+                }
+            }
+
+            return resultado;
+        }
     }
 }

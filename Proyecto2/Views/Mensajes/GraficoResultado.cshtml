@@ -8,32 +8,48 @@
 
 <h2>Gráfico del Plan de Vuelo</h2>
 
-<div class="card mb-3">
-    <div class="card-header">
-        <h4>Resumen</h4>
-    </div>
-    <div class="card-body">
-        <p><strong>Mensaje:</strong> @nombreMensaje</p>
-        <p><strong>Sistema:</strong> @nombreSistema</p>
-        <p><strong>Tiempo Óptimo:</strong> @tiempoOptimo segundos</p>
-    </div>
-</div>
-
-<div class="card">
-    <div class="card-header">
-        <h4>Código DOT para Graphviz</h4>
-    </div>
-    <div class="card-body">
-        <div class="alert alert-info">
-            <strong>Instrucciones:</strong> Copia el código y pégalo en 
-            <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a>
-            para visualizar el gráfico.
+<div class="row">
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-header bg-success text-white">
+                <h4>Resumen</h4>
+            </div>
+            <div class="card-body">
+                <p><strong>Mensaje:</strong> @nombreMensaje</p>
+                <p><strong>Sistema:</strong> @nombreSistema</p>
+                <p><strong> Tiempo Óptimo:</strong> @tiempoOptimo segundos</p>
+            </div>
         </div>
         
-        <pre class="bg-light p-3" style="overflow-x: auto; max-height: 400px;">@dotCode</pre>
-        
-        <button class="btn btn-primary" onclick="copiarAlPortapapeles()">Copiar código</button>
-        <a asp-action="GraficoPlan" asp-route-nombre="@nombreMensaje" class="btn btn-secondary">Volver</a>
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4>Acciones</h4>
+            </div>
+            <div class="card-body">
+                <a href="/Mensajes/Detalle?nombre=@nombreMensaje" class="btn btn-primary w-100 mb-2">Volver al Detalle</a>
+                <a href="/Mensajes/Index" class="btn btn-secondary w-100">← Volver a Mensajes</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-dark text-white">
+                <h4>Código DOT para Graphviz</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Instrucciones:</strong> Copia el código y pégalo en 
+                    <a href="https://dreampuf.github.io/GraphvizOnline/" target="_blank">Graphviz Online</a>
+                    para visualizar el gráfico del plan de vuelo.
+                </div>
+                
+                <pre class="bg-light p-3" style="overflow-x: auto; max-height: 400px; font-size: 12px;">@dotCode</pre>
+                
+                <button class="btn btn-primary" onclick="copiarAlPortapapeles()">Copiar código</button>
+                <a href="/Mensajes/GraficoPlan?nombre=@nombreMensaje" class="btn btn-secondary">Volver</a>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -42,6 +58,8 @@
         const codigo = document.querySelector('pre').innerText;
         navigator.clipboard.writeText(codigo).then(() => {
             alert('Código copiado al portapapeles');
+        }).catch(() => {
+            alert('Error al copiar');
         });
     }
 </script>

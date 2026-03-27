@@ -11,11 +11,13 @@ namespace Proyecto2.Models
         {
             public string NombreDron { get; set; } = string.Empty;
             public AccionDron Accion { get; set; }
+             public int AlturaResultante { get; set; }
             
-            public AccionDronEnSegundo(string nombreDron, AccionDron accion)
+            public AccionDronEnSegundo(string nombreDron, AccionDron accion, int alturaResultante = 0)
             {
                 NombreDron = nombreDron;
                 Accion = accion;
+                AlturaResultante = alturaResultante;
             }
         }
         
@@ -79,9 +81,9 @@ namespace Proyecto2.Models
                 Acciones = new ListaAccionesDron();
             }
             
-            public void AgregarAccion(string nombreDron, AccionDron accion)
+            public void AgregarAccion(string nombreDron, AccionDron accion, int alturaResultante = 0)
             {
-                Acciones.Agregar(new AccionDronEnSegundo(nombreDron, accion));
+                Acciones.Agregar(new AccionDronEnSegundo(nombreDron, accion, alturaResultante));
             }
         }
         
