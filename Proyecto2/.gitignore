@@ -1,0 +1,40 @@
+# Archivos de compilación
+bin/
+obj/
+
+# Archivos de Visual Studio
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Archivos temporales
+*.tmp
+*.temp
+*.log
+*.cache
+
+# Imágenes generadas (Graphviz)
+wwwroot/temp/
+wwwroot/xml/
+*.png
+*.dot
+
+# Archivos XML generados
+respuesta_*.xml
+
+# Mantener solo los XML de ejemplo
+!entrada*.xml
+
+# Archivos del sistema
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Archivos de publicación
+publish/
+PublishProfiles/
+
+# Archivos de respaldo
+*.bak
+*.backup
