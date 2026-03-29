@@ -23,7 +23,7 @@ namespace Proyecto2.Controllers
 
         public IActionResult Index()
         {
-            ListaSistemasDrones sistemas = _gestorSistemas.ObtenerTodos();
+            ListaSistemasDrones sistemas = _gestorSistemas.ObtenerTodosOrdenados();
             return View(sistemas);
         }
 

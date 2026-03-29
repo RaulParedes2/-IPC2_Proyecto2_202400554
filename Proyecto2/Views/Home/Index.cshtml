@@ -1,5 +1,6 @@
 @{
     ViewData["Title"] = "Inicio - Sistema de Drones";
+    var token = Html.AntiForgeryToken().ToString();
 }
 
 <div class="text-center">
@@ -58,109 +59,107 @@
                         <div class="mb-3">
                             <label class="form-label">Seleccionar archivo XML</label>
                             <input type="file" name="archivoXML" class="form-control" accept=".xml" required />
-                            <small class="form-text text-muted">Archivo XML con la configuración de drones, sistemas y mensajes</small>
-                        </div>
-                        <button type="submit" class="btn btn-success">Cargar Configuración</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-header">
-                    <h5>Generar Reporte</h5>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.TotalSistemas == 0)
-                    {
-                        <div class="alert alert-warning">
-                            No hay sistemas de drones disponibles. 
-                            <a href="/Sistemas/Crear">Cree uno</a> o cargue un archivo XML.
-                        </div>
-                    }
-                    <form action="/GenerarXMLSalida" method="post">
-                        @Html.AntiForgeryToken()
-                        <div class="mb-3">
-                            <label class="form-label">Sistema de Drones</label>
-                            <select name="nombreSistema" class="form-select">
-                                <option value="">-- Seleccione un sistema --</option>
-                                @{
-                                    var sistemas = ViewBag.SistemasDisponibles as Proyecto2.TDAs.ListaSistemasDrones;
-                                    if (sistemas != null)
-                                    {
-                                        var actual = sistemas.GetPrimero();
-                                        while (actual != null)
-                                        {
-                                            <option value="@actual.Data.Nombre">@actual.Data.Nombre</option>
-                                            actual = actual.Siguiente;
-                                        }
-                                    }
-                                }
-                            </select>
-                            <small class="form-text text-muted">Dejar en blanco para usar el primer sistema</small>
-                        </div>
-                        <button type="submit" class="btn btn-info">Generar XML de Salida</button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Accesos Rápidos con enlaces HTML directos -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h4>Accesos Rápidos</h4>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-3 mb-2">
-                            <a href="/Drones/Index" class="btn btn-outline-primary w-100 py-3" style="text-decoration: none;">
-                                Gestionar Drones
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="/Sistemas/Index" class="btn btn-outline-success w-100 py-3" style="text-decoration: none;">
-                                estionar Sistemas
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="/Mensajes/Index" class="btn btn-outline-info w-100 py-3" style="text-decoration: none;">
-                                Gestionar Mensajes
-                            </a>
-                        </div>
-                        <div class="col-md-3 mb-2">
-                            <a href="/Home/Ayuda" class="btn btn-outline-secondary w-100 py-3" style="text-decoration: none;">
-                                Ayuda
-                            </a>
-                        </div>
+                            <small class="form-text text-muted">Archivo XML con la configuración de drones, sistemas y
+                                mensajes</small>
+                            </div>
+                            <button type="submit" class="btn btn-success">Cargar Configuración</button>
+                        </form>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+        
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Generar Reporte</h5>
+                    </div>
+                    <div class="card-body">
+                        @if (ViewBag.TotalSistemas == 0)
+                        {
+                            <div class="alert alert-warning">
+                                No hay sistemas de drones disponibles.
+                                <a href="/Sistemas/Crear">Cree uno</a> o cargue un archivo XML.
+                            </div>
+                        }
+                        <form action="/Home/GenerarXMLSalidaDescargarForm" method="post">
+                            @Html.AntiForgeryToken()
+                            <div class="mb-3">
+                                <label class="form-label">Sistema de Drones</label>
+                                <select name="nombreSistema" class="form-select" required>
+                                    <option value="">-- Seleccione un sistema --</option>
+                                    @{
+                                        var sistemas = ViewBag.SistemasDisponibles as Proyecto2.TDAs.ListaSistemasDrones;
+                                        if (sistemas != null)
+                                        {
+                                            var actual = sistemas.GetPrimero();
+                                            while (actual != null)
+                                            {
+                                                <option value="@actual.Data.Nombre">@actual.Data.Nombre</option>
+                                                actual = actual.Siguiente;
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-info">Generar y Descargar XML</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
 
-<style>
-    .btn-outline-primary:hover {
-        background-color: #0d6efd;
-        color: white;
-    }
-    .btn-outline-success:hover {
-        background-color: #198754;
-        color: white;
-    }
-    .btn-outline-info:hover {
-        background-color: #0dcaf0;
-        color: white;
-    }
-    .btn-outline-secondary:hover {
-        background-color: #6c757d;
-        color: white;
-    }
-    .btn {
-        transition: all 0.3s ease;
-    }
-</style>
+            <script>
+                        // Extraer el token antifalsificación
+                        const antiForgeryToken = document.querySelector('input[name="__RequestVerificationToken"]').value;
+    
+                        async function generarYDescargar() {
+                            const sistema = document.getElementById('nombreSistema').value;
+        
+                            if (!sistema) {
+                                alert('Por favor seleccione un sistema de drones');
+                                return;
+                            }
+        
+                            try {
+                                const response = await fetch('/Home/GenerarXMLSalidaDescargar', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'RequestVerificationToken': antiForgeryToken
+                                    },
+                                    body: JSON.stringify({ nombreSistema: sistema })
+                                });
+            
+                                if (response.ok) {
+                                    const blob = await response.blob();
+                                    const url = window.URL.createObjectURL(blob);
+                                    const a = document.createElement('a');
+                                    a.href = url;
+                                    const fecha = new Date();
+                                    const nombreArchivo = `respuesta_${fecha.getFullYear()}${(fecha.getMonth() + 1).toString().padStart(2, '0')}${fecha.getDate().toString().padStart(2, '0')}_${fecha.getHours().toString().padStart(2, '0')}${fecha.getMinutes().toString().padStart(2, '0')}${fecha.getSeconds().toString().padStart(2, '0')}.xml`;
+                                    a.download = nombreArchivo;
+                                    document.body.appendChild(a);
+                                    a.click();
+                                    document.body.removeChild(a);
+                                    window.URL.revokeObjectURL(url);
+                
+                                    // Mostrar mensaje de éxito
+                                    const alertDiv = document.createElement('div');
+                                    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+                                    alertDiv.innerHTML = `
+                                        <strong>Éxito!</strong> Archivo XML generado y descargado como ${nombreArchivo}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    `;
+                                    document.querySelector('.card-body').appendChild(alertDiv);
+                
+                                    setTimeout(() => {
+                                        alertDiv.remove();
+                                    }, 5000);
+                                } else {
+                                    const error = await response.text();
+                                    alert('Error al generar el XML: ' + error);
+                                }
+                            } catch (error) {
+                                alert('Error de conexión: ' + error.message);
+                            }
+                        }
+            </script>

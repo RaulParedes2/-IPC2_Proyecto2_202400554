@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Proyecto2.TDAs;
+using Proyecto2.Models;
 using Proyecto2.Services;
 
 namespace Proyecto2.Controllers
@@ -142,6 +144,47 @@ namespace Proyecto2.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult GenerarXMLSalidaDescargarForm(string nombreSistema)
+        {
+            try
+            {
+                Console.WriteLine($"=== Generando XML para descargar (form), sistema: {nombreSistema} ===");
+
+                if (string.IsNullOrEmpty(nombreSistema))
+                {
+                    TempData["Error"] = "Debe seleccionar un sistema de drones";
+                    return RedirectToAction("Index");
+                }
+
+                SistemaDrones? sistema = _gestorSistemas.ObtenerPorNombre(nombreSistema);
+                if (sistema == null)
+                {
+                    TempData["Error"] = $"Sistema '{nombreSistema}' no encontrado";
+                    return RedirectToAction("Index");
+                }
+
+                // Generar el XML
+                string xml = _generadorXML.GenerarXMLSalida(nombreSistema, _gestorSistemas);
+
+                // Generar nombre de archivo con fecha
+                string nombreArchivo = $"respuesta_{DateTime.Now:yyyyMMdd_HHmmss}.xml";
+
+                // Convertir a bytes
+                byte[] bytes = System.Text.Encoding.UTF8.GetBytes(xml);
+
+                // Retornar como archivo para descargar
+                return File(bytes, "application/xml", nombreArchivo);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error al generar XML: {ex.Message}");
+                TempData["Error"] = $"Error: {ex.Message}";
+                return RedirectToAction("Index");
+            }
         }
     }
 }

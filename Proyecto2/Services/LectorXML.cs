@@ -86,6 +86,10 @@ namespace Proyecto2.Services
                     _gestorDrones.AgregarDron(nombreDron);
                     Console.WriteLine($"Dron agregado: {nombreDron}");
                 }
+                else if (!string.IsNullOrEmpty(nombreDron))
+                {
+                    Console.WriteLine($"Dron ya existe, no se agrega: {nombreDron}");
+                }
             }
         }
 

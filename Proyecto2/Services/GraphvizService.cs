@@ -20,43 +20,43 @@ namespace Proyecto2.Services
         }
 
         private string FindGraphvizPath()
-{
-    // Rutas comunes de instalación de Graphviz en Windows
-    string[] possiblePaths = new string[]
-    {
+        {
+            // Rutas comunes de instalación de Graphviz en Windows
+            string[] possiblePaths = new string[]
+            {
         @"C:\Program Files\Graphviz\bin\dot.exe",
         @"C:\Program Files (x86)\Graphviz\bin\dot.exe",
         @"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Graphviz\bin\dot.exe",
         @"C:\Users\" + Environment.UserName + @"\AppData\Local\Graphviz\bin\dot.exe"
-    };
+            };
 
-    foreach (string path in possiblePaths)
-    {
-        if (File.Exists(path))
-        {
-            Console.WriteLine($"Graphviz encontrado en: {path}");
-            return path;
-        }
-    }
-    
-    // Buscar en variables de entorno PATH
-    string? pathEnv = Environment.GetEnvironmentVariable("PATH");
-    if (pathEnv != null)
-    {
-        foreach (string dir in pathEnv.Split(';'))
-        {
-            string fullPath = Path.Combine(dir.Trim(), "dot.exe");
-            if (File.Exists(fullPath))
+            foreach (string path in possiblePaths)
             {
-                Console.WriteLine($"Graphviz encontrado en PATH: {fullPath}");
-                return fullPath;
+                if (File.Exists(path))
+                {
+                    Console.WriteLine($"Graphviz encontrado en: {path}");
+                    return path;
+                }
             }
+
+            // Buscar en variables de entorno PATH
+            string? pathEnv = Environment.GetEnvironmentVariable("PATH");
+            if (pathEnv != null)
+            {
+                foreach (string dir in pathEnv.Split(';'))
+                {
+                    string fullPath = Path.Combine(dir.Trim(), "dot.exe");
+                    if (File.Exists(fullPath))
+                    {
+                        Console.WriteLine($"Graphviz encontrado en PATH: {fullPath}");
+                        return fullPath;
+                    }
+                }
+            }
+
+            Console.WriteLine("Graphviz NO encontrado en el sistema");
+            return "dot"; // Intentar usar el comando directo
         }
-    }
-    
-    Console.WriteLine("Graphviz NO encontrado en el sistema");
-    return "dot"; // Intentar usar el comando directo
-}
         public string? GenerarImagen(string dotCode, string nombreArchivo)
         {
             try
@@ -200,6 +200,9 @@ namespace Proyecto2.Services
 
         private string GenerarDotTabla(SistemaDrones sistema)
         {
+            // Obtener drones ordenados alfabéticamente
+            ListaDrones dronesOrdenados = sistema.Drones.ObtenerOrdenadosAlfabeticamente();
+
             // Encontrar la altura máxima que tiene codificación
             int alturaMaxima = 0;
             var celda = sistema.Codificacion.GetPrimero();
@@ -212,7 +215,6 @@ namespace Proyecto2.Services
                 celda = celda.Siguiente;
             }
 
-            // Si no hay codificaciones, mostrar hasta 10 por defecto
             if (alturaMaxima == 0)
             {
                 alturaMaxima = 10;
@@ -225,25 +227,25 @@ namespace Proyecto2.Services
 
             dot += "  tablerank [label=<\n";
             dot += "    <table border=\"1\" cellborder=\"1\" cellspacing=\"0\" cellpadding=\"8\">\n";
-            dot += "          <tr>\n";
+            dot += "        <tr>\n";
             dot += "        <td bgcolor=\"lightblue\"><b>Altura (mts)</b></td>\n";
 
-            // Agregar columnas de drones
-            NodoDron? dronActual = sistema.Drones.GetPrimero();
+            // Agregar columnas de drones en orden alfabético
+            NodoDron? dronActual = dronesOrdenados.GetPrimero();
             while (dronActual != null)
             {
                 dot += $"        <td bgcolor=\"lightblue\"><b>{dronActual.Data.Nombre}</b></td>\n";
                 dronActual = dronActual.Siguiente;
             }
-            dot += "          </tr>\n";
+            dot += "        </tr>\n";
 
-            // Agregar filas de alturas desde 1 hasta alturaMaxima
+            // Agregar filas de alturas
             for (int altura = 1; altura <= alturaMaxima; altura++)
             {
-                dot += "          <tr>\n";
+                dot += "        <tr>\n";
                 dot += $"         <td bgcolor=\"lightgray\"><b>{altura}</b></td>\n";
 
-                dronActual = sistema.Drones.GetPrimero();
+                dronActual = dronesOrdenados.GetPrimero();
                 while (dronActual != null)
                 {
                     char letra = sistema.ObtenerLetra(dronActual.Data.Nombre, altura);
@@ -257,7 +259,6 @@ namespace Proyecto2.Services
                     }
                     else if (letra == '?')
                     {
-                        // No hay codificación para esta altura, mostrar "?"
                         mostrarLetra = "?";
                         bgColor = "bgcolor=\"lightcoral\"";
                     }
@@ -270,10 +271,10 @@ namespace Proyecto2.Services
                     dot += $"        <td {bgColor}>{mostrarLetra}</td>\n";
                     dronActual = dronActual.Siguiente;
                 }
-                dot += "          </tr>\n";
+                dot += "        </tr>\n";
             }
 
-            dot += "       </table>\n";
+            dot += "      </table>\n";
             dot += "  >];\n";
             dot += "}\n";
 

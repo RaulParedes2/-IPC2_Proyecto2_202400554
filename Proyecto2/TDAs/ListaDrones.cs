@@ -127,48 +127,39 @@ namespace Proyecto2.TDAs
         public ListaDrones ObtenerOrdenadosAlfabeticamente()
         {
             ListaDrones ordenada = new ListaDrones();
-            
-            // Si la lista está vacía, retornar lista vacía
+
             if (primero == null)
                 return ordenada;
 
-            // Versión sin usar arreglos - vamos transfiriendo los nodos uno por uno
-            // insertándolos en orden alfabético
+            // Copiar todos los drones a un array temporal
+            Dron[] temporal = new Dron[count];
             NodoDron? actual = primero;
+            int idx = 0;
             while (actual != null)
             {
-                Dron dronActual = actual.Data;
-                
-                // Buscar la posición donde insertar en orden alfabético
-                if (ordenada.primero == null)
-                {
-                    ordenada.Agregar(dronActual);
-                }
-                else
-                {
-                    // Insertar en orden alfabético
-                    NodoDron? actualOrdenada = ordenada.primero;
-                    int posicion = 0;
-                    bool insertado = false;
-                    
-                    while (actualOrdenada != null && !insertado)
-                    {
-                        if (string.Compare(dronActual.Nombre, actualOrdenada.Data.Nombre) < 0)
-                        {
-                            ordenada.Insertar(posicion, dronActual);
-                            insertado = true;
-                        }
-                        actualOrdenada = actualOrdenada.Siguiente;
-                        posicion++;
-                    }
-                    
-                    if (!insertado)
-                    {
-                        ordenada.Agregar(dronActual);
-                    }
-                }
-                
+                temporal[idx] = actual.Data;
                 actual = actual.Siguiente;
+                idx++;
+            }
+
+            // Ordenar usando burbuja
+            for (int i = 0; i < count - 1; i++)
+            {
+                for (int j = 0; j < count - i - 1; j++)
+                {
+                    if (string.Compare(temporal[j].Nombre, temporal[j + 1].Nombre) > 0)
+                    {
+                        Dron temp = temporal[j];
+                        temporal[j] = temporal[j + 1];
+                        temporal[j + 1] = temp;
+                    }
+                }
+            }
+
+            // Reconstruir lista ordenada
+            for (int i = 0; i < count; i++)
+            {
+                ordenada.Agregar(temporal[i]);
             }
 
             return ordenada;
@@ -202,7 +193,7 @@ namespace Proyecto2.TDAs
 
         // Propiedades
         public int Count { get { return count; } }
-        
+
         public bool EstaVacia { get { return count == 0; } }
 
         // Obtener el primer nodo (para iteración manual)

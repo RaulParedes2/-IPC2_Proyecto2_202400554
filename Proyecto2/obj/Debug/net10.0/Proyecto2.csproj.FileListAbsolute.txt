@@ -361,14 +361,7 @@ C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\rjsmcshtml.dswa.cache.json
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\scopedcss\bundle\Proyecto2.styles.css
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\zi7er3bque-{0}-mhoq42itt2-mhoq42itt2.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\rlsqllevh7-{0}-z3ig3ekq70-z3ig3ekq70.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\xidfsgl5v7-{0}-exl29pkj11-exl29pkj11.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\2xcd0ed0f9-{0}-exl29pkj11-exl29pkj11.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\ng24vte7b0-{0}-4vqsnz7r75-4vqsnz7r75.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\w5bye2reui-{0}-uzo8dxw9pr-uzo8dxw9pr.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\5buftjnfro-{0}-h4xzo8nf0a-h4xzo8nf0a.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\30vs1k43rj-{0}-uauvmecpg4-uauvmecpg4.gz
-C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\jhezcelby4-{0}-ik5qbb2sjs-ik5qbb2sjs.gz
+C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\compressed\5hcv9xbtbx-{0}-yzj8pu04fz-yzj8pu04fz.gz
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\Daniel Predes\Desktop\-IPC2_Proyecto2_202400554\Proyecto2\obj\Debug\net10.0\staticwebassets.development.json

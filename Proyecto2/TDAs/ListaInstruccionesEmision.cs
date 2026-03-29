@@ -46,7 +46,6 @@ namespace Proyecto2.TDAs
             }
             return actual.Data;
         }
-
         public bool Eliminar(int indice)
         {
             if (indice < 0 || indice >= count)
@@ -70,7 +69,7 @@ namespace Proyecto2.TDAs
         }
 
         public int Count { get { return count; } }
-        
+
         public bool EstaVacia { get { return count == 0; } }
 
         public NodoInstruccionEmision? GetPrimero()
@@ -93,5 +92,7 @@ namespace Proyecto2.TDAs
                 actual = actual.Siguiente;
             }
         }
+
+
     }
 }
