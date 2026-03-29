@@ -20,7 +20,7 @@ namespace Proyecto2.Services
         public string GenerarXMLSalida(string nombreSistema, GestorSistemas gestorSistemas)
         {
             StringBuilder xml = new StringBuilder();
-            xml.AppendLine("<?xml version=\"1.0\"?>");
+            xml.AppendLine("<?xml version=\"1.0\" encoding=\"utf-8\"?>");
             xml.AppendLine("<respuesta>");
             xml.AppendLine("  <listaMensajes>");
 
@@ -39,35 +39,34 @@ namespace Proyecto2.Services
                 while (actual != null)
                 {
                     PlanVuelo? plan = _planificador.CalcularPlan(actual.Data, sistema);
-                    
+
                     xml.AppendLine($"    <mensaje nombre=\"{actual.Data.Nombre}\">");
                     xml.AppendLine($"      <sistemaDrones>{sistema.Nombre}</sistemaDrones>");
-                    
+
                     if (plan != null)
                     {
                         xml.AppendLine($"      <tiempoOptimo>{plan.TiempoOptimo}</tiempoOptimo>");
                         xml.AppendLine($"      <mensajeRecibido>{plan.MensajeRecibido}</mensajeRecibido>");
                         xml.AppendLine("      <instrucciones>");
-                        
+
                         PlanVuelo.NodoSegundo? segundoActual = plan.GetPrimero();
                         while (segundoActual != null)
                         {
                             xml.AppendLine($"        <tiempo valor=\"{segundoActual.Data.Segundo}\">");
                             xml.AppendLine("          <acciones>");
-                            
+
                             PlanVuelo.NodoAccionDron? accionActual = segundoActual.Data.Acciones.GetPrimero();
                             while (accionActual != null)
                             {
-                                string accion = accionActual.Data.Accion.ToString();
-                                xml.AppendLine($"            <dron nombre=\"{accionActual.Data.NombreDron}\"> {accion} </dron>");
+                                xml.AppendLine($"            <dron nombre=\"{accionActual.Data.NombreDron}\">{accionActual.Data.Accion}</dron>");
                                 accionActual = accionActual.Siguiente;
                             }
-                            
+
                             xml.AppendLine("          </acciones>");
                             xml.AppendLine("        </tiempo>");
                             segundoActual = segundoActual.Siguiente;
                         }
-                        
+
                         xml.AppendLine("      </instrucciones>");
                     }
                     else
@@ -76,7 +75,7 @@ namespace Proyecto2.Services
                         xml.AppendLine("      <mensajeRecibido></mensajeRecibido>");
                         xml.AppendLine("      <instrucciones></instrucciones>");
                     }
-                    
+
                     xml.AppendLine("    </mensaje>");
                     actual = actual.Siguiente;
                 }
@@ -92,12 +91,12 @@ namespace Proyecto2.Services
         {
             string ruta = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "xml", nombreArchivo);
             string? directorio = Path.GetDirectoryName(ruta);
-            
+
             if (!string.IsNullOrEmpty(directorio) && !Directory.Exists(directorio))
             {
                 Directory.CreateDirectory(directorio);
             }
-            
+
             File.WriteAllText(ruta, contenido);
         }
     }

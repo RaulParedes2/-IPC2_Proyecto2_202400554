@@ -33,12 +33,17 @@ namespace Proyecto2.Models
 
         public char ObtenerLetra(string nombreDron, int altura)
         {
-            return Codificacion.ObtenerLetra(nombreDron, altura);
+            char letra = Codificacion.ObtenerLetra(nombreDron, altura);
+            Console.WriteLine($"  Buscando letra: {nombreDron} @ {altura}m = '{letra}'");
+            return letra;
         }
 
         public void ConfigurarCodificacion(string nombreDron, int altura, char letra)
         {
-            Codificacion.Agregar(nombreDron, altura, letra);
+            // Primero eliminar si ya existe
+    Codificacion.EliminarCombinacion(nombreDron, altura);
+    // Luego agregar la nueva
+    Codificacion.Agregar(nombreDron, altura, letra);
         }
 
         public Dron? ObtenerDron(string nombreDron)

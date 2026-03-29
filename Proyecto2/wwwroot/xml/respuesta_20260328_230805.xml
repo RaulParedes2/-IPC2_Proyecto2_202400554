@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<respuesta>
+  <listaMensajes>
+    <mensaje nombre="MensajeTortilla">
+      <sistemaDrones>SistemaRestaurante</sistemaDrones>
+      <tiempoOptimo>26</tiempoOptimo>
+      <mensajeRecibido>TORTILAL</mensajeRecibido>
+      <instrucciones>
+        <tiempo valor="1">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="2">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="3">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="4">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="5">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="6">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="7">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="8">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="9">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="10">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="11">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="12">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="13">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="14">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="15">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="16">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="17">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="18">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="19">
+          <acciones>
+            <dron nombre="DronFuego">Bajar</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="20">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="21">
+          <acciones>
+            <dron nombre="DronFuego">Subir</dron>
+            <dron nombre="DronHumo">Esperar</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="22">
+          <acciones>
+            <dron nombre="DronFuego">Emitir Luz</dron>
+            <dron nombre="DronHumo">Subir</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="23">
+          <acciones>
+            <dron nombre="DronFuego">Esperar</dron>
+            <dron nombre="DronHumo">Subir</dron>
+            <dron nombre="DronVapor">Emitir Luz</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="24">
+          <acciones>
+            <dron nombre="DronFuego">Esperar</dron>
+            <dron nombre="DronHumo">Subir</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="25">
+          <acciones>
+            <dron nombre="DronFuego">Esperar</dron>
+            <dron nombre="DronHumo">Subir</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+        <tiempo valor="26">
+          <acciones>
+            <dron nombre="DronFuego">Esperar</dron>
+            <dron nombre="DronHumo">Emitir Luz</dron>
+            <dron nombre="DronVapor">Esperar</dron>
+          </acciones>
+        </tiempo>
+      </instrucciones>
+    </mensaje>
+  </listaMensajes>
+</respuesta>

@@ -1,14 +1,13 @@
 @using Proyecto2.Models
 @using Proyecto2.TDAs
-@model Mensaje
-
 @{
-    ViewData["Title"] = $"Gráfico - {Model.Nombre}";
+    Mensaje? mensaje = ViewBag.Mensaje as Mensaje;
     ListaSistemasDrones sistemas = ViewBag.Sistemas as ListaSistemasDrones ?? new ListaSistemasDrones();
+    string nombreMensaje = mensaje?.Nombre ?? "";
 }
 
 <h2>Gráfico del Plan de Vuelo</h2>
-<h4>Mensaje: @Model.Nombre</h4>
+<h4>Mensaje: @nombreMensaje</h4>
 
 @if (TempData["Error"] != null)
 {
@@ -22,7 +21,7 @@
     <div class="card-body">
         <form asp-action="GenerarGrafico" method="post">
             @Html.AntiForgeryToken()
-            <input type="hidden" name="nombreMensaje" value="@Model.Nombre" />
+            <input type="hidden" name="nombreMensaje" value="@nombreMensaje" />
             <div class="mb-3">
                 <label class="form-label">Sistema de Drones</label>
                 <select name="nombreSistema" class="form-select" required>
@@ -43,6 +42,6 @@
 </div>
 
 <div class="mt-3">
-    <a href="/Mensajes/Detalle?nombre=@Model.Nombre" class="btn btn-secondary">← Volver al Detalle</a>
+    <a href="/Mensajes/Detalle?nombre=@nombreMensaje" class="btn btn-secondary">← Volver al Detalle</a>
     <a href="/Mensajes/Index" class="btn btn-secondary">Volver a Mensajes</a>
 </div>

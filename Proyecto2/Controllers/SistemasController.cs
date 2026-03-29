@@ -12,13 +12,13 @@ namespace Proyecto2.Controllers
         private readonly GraphvizService _graphvizService;
 
         public SistemasController(
-            GestorSistemas gestorSistemas, 
+            GestorSistemas gestorSistemas,
             GestorDrones gestorDrones,
             GraphvizService graphvizService)
         {
             _gestorSistemas = gestorSistemas;
             _gestorDrones = gestorDrones;
-            _graphvizService = graphvizService;
+             _graphvizService = graphvizService;
         }
 
         public IActionResult Index()
@@ -43,7 +43,7 @@ namespace Proyecto2.Controllers
             }
 
             bool resultado = _gestorSistemas.AgregarSistema(nombre);
-            
+
             if (!resultado)
             {
                 ViewBag.Error = $"Ya existe un sistema con el nombre {nombre}";
@@ -71,7 +71,7 @@ namespace Proyecto2.Controllers
         public IActionResult AgregarDron(string nombreSistema, string nombreDron)
         {
             bool resultado = _gestorSistemas.AgregarDronASistema(nombreSistema, nombreDron);
-            
+
             if (resultado)
             {
                 TempData["Mensaje"] = $"Dron '{nombreDron}' agregado al sistema";
@@ -80,25 +80,57 @@ namespace Proyecto2.Controllers
             {
                 TempData["Error"] = "No se pudo agregar el dron al sistema";
             }
-            
+
             return RedirectToAction("Detalle", new { nombre = nombreSistema });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult ConfigurarCodificacion(string nombreSistema, string nombreDron, int altura, char letra)
+        public IActionResult ConfigurarCodificacion(string nombreSistema, string nombreDron, int altura, string letra)
         {
-            bool resultado = _gestorSistemas.ConfigurarCodificacion(nombreSistema, nombreDron, altura, letra);
-            
-            if (resultado)
+            Console.WriteLine($"ConfigurarCodificacion: sistema={nombreSistema}, dron={nombreDron}, altura={altura}, letra='{letra}'");
+
+            if (string.IsNullOrEmpty(nombreDron) || altura < 1 || altura > 100)
             {
-                TempData["Mensaje"] = $"Codificación configurada: {nombreDron} a {altura}m = '{letra}'";
+                TempData["Error"] = "Datos incompletos para configurar codificacion";
+                return RedirectToAction("Detalle", new { nombre = nombreSistema });
+            }
+
+            char letraChar;
+
+            // Verificar si es la palabra especial "espacio"
+            if (string.IsNullOrEmpty(letra))
+            {
+                TempData["Error"] = "Debe ingresar una letra o usar el boton de espacio";
+                return RedirectToAction("Detalle", new { nombre = nombreSistema });
+            }
+            else if (letra == "espacio" || letra == "ESPACIO")
+            {
+                letraChar = ' ';
+                Console.WriteLine("Espacio detectado por palabra especial");
+            }
+            else if (letra.Length == 1 && letra[0] == ' ')
+            {
+                letraChar = ' ';
+                Console.WriteLine("Espacio detectado por caracter");
             }
             else
             {
-                TempData["Error"] = "No se pudo configurar la codificación";
+                letraChar = letra[0];
             }
-            
+
+            bool resultado = _gestorSistemas.ConfigurarCodificacion(nombreSistema, nombreDron, altura, letraChar);
+
+            if (resultado)
+            {
+                string mostrarLetra = (letraChar == ' ') ? "[ESPACIO]" : letraChar.ToString();
+                TempData["Mensaje"] = $"Codificacion configurada: {nombreDron} a {altura}m = {mostrarLetra}";
+            }
+            else
+            {
+                TempData["Error"] = "No se pudo configurar la codificacion. Verifique que el dron existe en el sistema.";
+            }
+
             return RedirectToAction("Detalle", new { nombre = nombreSistema });
         }
 
@@ -116,25 +148,23 @@ namespace Proyecto2.Controllers
             SistemaDrones? sistema = _gestorSistemas.ObtenerPorNombre(nombre);
             if (sistema == null)
             {
-                return NotFound();
+                TempData["Error"] = $"Sistema '{nombre}' no encontrado";
+                return RedirectToAction("Index");
             }
 
-            string dot = GenerarDotParaSistema(sistema);
-            string nombreArchivo = $"sistema_{nombre}_{DateTime.Now.Ticks}";
-            string? imagenPath = _graphvizService.GenerarImagen(dot, nombreArchivo);
-
-            ViewBag.DotCode = dot;
-            ViewBag.NombreSistema = nombre;
+            string nombreArchivo = $"tabla_{sistema.Nombre}_{DateTime.Now.Ticks}";
+            string? imagenPath = _graphvizService.GenerarTablaCodificacion(sistema, nombreArchivo);
 
             if (imagenPath == null)
             {
-                TempData["Error"] = "No se pudo generar la imagen. Verifica que Graphviz esté instalado.";
+                TempData["Error"] = "No se pudo generar la imagen. Verifique que Graphviz este instalado.";
+                return RedirectToAction("Detalle", new { nombre = sistema.Nombre });
             }
-            else
-            {
-                ViewBag.ImagenPath = imagenPath;
-            }
-            
+
+            ViewBag.ImagenPath = imagenPath;
+            ViewBag.NombreSistema = sistema.Nombre;
+            ViewBag.Sistema = sistema;
+
             return View();
         }
 
@@ -145,15 +175,15 @@ namespace Proyecto2.Controllers
             dot += "  node [shape=box, style=filled, fillcolor=lightblue];\n";
             dot += "  fontname=\"Arial\";\n";
             dot += "  fontsize=12;\n\n";
-            
+
             dot += $"  titulo [label=\"Sistema: {sistema.Nombre}\", shape=plaintext, fontsize=16];\n\n";
             dot += $"  sistema [label=\"Sistema\\n{sistema.Nombre}\", fillcolor=lightgreen];\n\n";
-            
+
             dot += "  subgraph cluster_drones {\n";
             dot += "    label=\"Drones\";\n";
             dot += "    style=filled;\n";
             dot += "    fillcolor=lightyellow;\n\n";
-            
+
             NodoDron? actualDron = sistema.Drones.GetPrimero();
             while (actualDron != null)
             {
@@ -161,21 +191,21 @@ namespace Proyecto2.Controllers
                 dot += $"    sistema -> dron_{actualDron.Data.Nombre};\n";
                 actualDron = actualDron.Siguiente;
             }
-            
+
             dot += "  }\n\n";
-            
+
             dot += "  subgraph cluster_codificacion {\n";
             dot += "    label=\"Tabla de Codificación\";\n";
             dot += "    style=filled;\n";
             dot += "    fillcolor=lightgray;\n\n";
-            
+
             TablaCodificacion.CeldaCodificacion? actualCelda = sistema.Codificacion.GetPrimero();
             while (actualCelda != null)
             {
                 dot += $"    cod_{actualCelda.NombreDron}_{actualCelda.Altura} [label=\"{actualCelda.NombreDron} @ {actualCelda.Altura}m = '{actualCelda.Letra}'\", shape=ellipse];\n";
                 actualCelda = actualCelda.Siguiente;
             }
-            
+
             dot += "  }\n";
             dot += "}\n";
             return dot;

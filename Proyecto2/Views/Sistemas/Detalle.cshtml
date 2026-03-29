@@ -23,7 +23,7 @@
     <div class="col-md-6">
         <div class="card">
             <div class="card-header bg-primary text-white">
-                <h4>Drones en el Sistema</h4>
+                <h4> Drones en el Sistema</h4>
             </div>
             <div class="card-body">
                 @if (Model.Drones.Count == 0)
@@ -120,7 +120,16 @@
                                     <tr>
                                         <td><strong>@celdaActual.NombreDron</strong></td>
                                         <td>@celdaActual.Altura m</td>
-                                        <td><span class="badge bg-primary fs-6">'@celdaActual.Letra'</span></td>
+                                        <td>
+                                            @if (celdaActual.Letra == ' ')
+                                            {
+                                                <span class="badge bg-warning" style="font-size: 1rem;">[ESPACIO]</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-primary">'@celdaActual.Letra'</span>
+                                            }
+                                        </td>
                                     </tr>
                                     celdaActual = celdaActual.Siguiente;
                                 }
@@ -130,11 +139,12 @@
                 }
             </div>
         </div>
+
         
-        <!-- Configurar Codificación -->
+        <!-- Configurar Codificacion -->
         <div class="card mt-3">
             <div class="card-header bg-warning">
-                <h4>Configurar Codificación</h4>
+                <h4>Configurar Codificacion</h4>
             </div>
             <div class="card-body">
                 <form action="/Sistemas/ConfigurarCodificacion" method="post">
@@ -160,16 +170,34 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Letra</label>
-                        <input type="text" name="letra" class="form-control" maxlength="1" required />
-                    </div>
-                    <button type="submit" class="btn btn-primary">Configurar</button>
-                </form>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <input type="text" id="letraInput" name="letra" class="form-control" maxlength="1"
+                                       placeholder="Ej: A" />
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-outline-secondary w-100"
+                                        onclick="insertarEspacio()">Insertar ESPACIO</button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">Ingrese un solo caracter o use el boton para insertar un
+                            espacio</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Configurar</button>
+                    </form>
+                </div>
             </div>
-        </div>
-    </div>
-</div>
 
-<div class="mt-3">
-    <a href="/Sistemas/Index" class="btn btn-secondary">← Volver a la lista</a>
-    <a href="/Sistemas/GraficoPNG?nombre=@Model.Nombre" class="btn btn-info">Ver Gráfico</a>
-</div>
+            <script>
+                        function insertarEspacio() {
+                            var input = document.getElementById('letraInput');
+                            input.value = 'espacio';
+                            input.dispatchEvent(new Event('input', { bubbles: true }));
+                            input.dispatchEvent(new Event('change', { bubbles: true }));
+                        }
+            </script>
+
+            <div class="mt-3">
+                <a href="/Sistemas/Index" class="btn btn-secondary">← Volver a la lista</a>
+                <a href="/Sistemas/GraficoPNG?nombre=@Model.Nombre" class="btn btn-info">Ver Gráfico</a>
+            </div>

@@ -107,46 +107,66 @@ namespace Proyecto2.Services
                     Console.WriteLine($"Sistema creado: {nombreSistema}");
                 }
 
-                XmlNode? contenidoNode = sistemaNode.SelectSingleNode("contenido");
-                if (contenidoNode != null)
+                XmlNodeList? contenidos = sistemaNode.SelectNodes("contenido");
+                if (contenidos != null)
                 {
-                    // Obtener todos los drones y alturas en orden secuencial
-                    XmlNodeList? nodosHijos = contenidoNode.ChildNodes;
-
-                    string? nombreDronActual = null;
-
-                    foreach (XmlNode nodo in nodosHijos)
+                    foreach (XmlNode contenidoNode in contenidos)
                     {
-                        if (nodo.Name == "dron")
-                        {
-                            // Guardar el nombre del dron
-                            nombreDronActual = nodo.InnerText?.Trim();
-                            Console.WriteLine($"  Dron encontrado: {nombreDronActual}");
+                        XmlNode? dronNode = contenidoNode.SelectSingleNode("dron");
+                        string? nombreDron = dronNode?.InnerText?.Trim();
 
-                            if (!string.IsNullOrEmpty(nombreDronActual) && _gestorDrones.ExisteDron(nombreDronActual))
+                        if (!string.IsNullOrEmpty(nombreDron))
+                        {
+                            Console.WriteLine($"  Procesando dron: {nombreDron}");
+
+                            if (_gestorDrones.ExisteDron(nombreDron))
                             {
-                                _gestorSistemas.AgregarDronASistema(nombreSistema, nombreDronActual);
-                                Console.WriteLine($"    Dron {nombreDronActual} agregado al sistema");
+                                _gestorSistemas.AgregarDronASistema(nombreSistema, nombreDron);
+                                Console.WriteLine($"    Dron {nombreDron} agregado al sistema");
                             }
-                        }
-                        else if (nodo.Name == "alturas" && !string.IsNullOrEmpty(nombreDronActual))
-                        {
-                            // Procesar las alturas para el dron actual
-                            XmlNodeList? alturas = nodo.SelectNodes("altura");
-                            if (alturas != null)
-                            {
-                                foreach (XmlNode alturaNode in alturas)
-                                {
-                                    string? alturaValor = alturaNode.Attributes?["valor"]?.Value;
-                                    string? letra = alturaNode.InnerText?.Trim();
 
-                                    if (!string.IsNullOrEmpty(alturaValor) &&
-                                        int.TryParse(alturaValor, out int altura) &&
-                                        !string.IsNullOrEmpty(letra))
+                            XmlNode? alturasNode = contenidoNode.SelectSingleNode("alturas");
+                            if (alturasNode != null)
+                            {
+                                XmlNodeList? alturas = alturasNode.SelectNodes("altura");
+                                if (alturas != null)
+                                {
+                                    foreach (XmlNode alturaNode in alturas)
                                     {
-                                        char letraChar = letra.Length > 0 ? letra[0] : '?';
-                                        _gestorSistemas.ConfigurarCodificacion(nombreSistema, nombreDronActual, altura, letraChar);
-                                        Console.WriteLine($"      Codificación: {nombreDronActual} @ {altura}m = '{letraChar}'");
+                                        string? alturaValor = alturaNode.Attributes?["valor"]?.Value;
+                                        string? letra = alturaNode.InnerText;
+
+                                        Console.WriteLine($"      Leyendo: valor={alturaValor}, texto='{letra}', longitud={letra?.Length ?? 0}");
+
+                                        char letraChar;
+
+                                        if (letra == null)
+                                        {
+                                            letraChar = '?';
+                                        }
+                                        else if (letra.Length == 0)
+                                        {
+                                            // Si está vacío, verificar si debería ser espacio
+                                            // Podemos usar un marcador como '_' pero es mejor usar espacio
+                                            letraChar = ' ';  // Tratar vacío como espacio
+                                            Console.WriteLine($"      >>> ETIQUETA VACÍA, USANDO ESPACIO <<<");
+                                        }
+                                        else if (letra == " " || letra == "&nbsp;" || letra == "\u00A0")
+                                        {
+                                            letraChar = ' ';
+                                            Console.WriteLine($"      >>> ESPACIO DETECTADO! <<<");
+                                        }
+                                        else
+                                        {
+                                            letraChar = letra[0];
+                                        }
+
+                                        if (!string.IsNullOrEmpty(alturaValor) &&
+                                            int.TryParse(alturaValor, out int altura))
+                                        {
+                                            _gestorSistemas.ConfigurarCodificacion(nombreSistema, nombreDron, altura, letraChar);
+                                            Console.WriteLine($"      Guardado: {nombreDron} @ {altura}m = '{letraChar}'");
+                                        }
                                     }
                                 }
                             }
@@ -155,6 +175,7 @@ namespace Proyecto2.Services
                 }
             }
         }
+
         private void CargarMensajes(XmlNode listaMensajesNode)
         {
             XmlNodeList? mensajes = listaMensajesNode.SelectNodes("Mensaje");
@@ -165,18 +186,15 @@ namespace Proyecto2.Services
                 string? nombreMensaje = mensajeNode.Attributes?["nombre"]?.Value;
                 if (string.IsNullOrEmpty(nombreMensaje)) continue;
 
-                // Crear mensaje
                 if (!_gestorMensajes.ExisteMensaje(nombreMensaje))
                 {
                     _gestorMensajes.AgregarMensaje(nombreMensaje, "");
                     Console.WriteLine($"Mensaje agregado: {nombreMensaje}");
                 }
 
-                // Cargar sistema de drones asociado
                 XmlNode? sistemaDronesNode = mensajeNode.SelectSingleNode("sistemaDrones");
                 string? nombreSistema = sistemaDronesNode?.InnerText?.Trim();
 
-                // Cargar instrucciones (solo dron y altura, sin letra)
                 XmlNode? instruccionesNode = mensajeNode.SelectSingleNode("instrucciones");
                 if (instruccionesNode != null)
                 {
@@ -192,7 +210,6 @@ namespace Proyecto2.Services
                                 !string.IsNullOrEmpty(alturaStr) &&
                                 int.TryParse(alturaStr, out int altura))
                             {
-                                // Obtener la letra de la codificación del sistema
                                 char letra = '?';
 
                                 if (!string.IsNullOrEmpty(nombreSistema))
@@ -201,11 +218,10 @@ namespace Proyecto2.Services
                                     if (sistema != null)
                                     {
                                         letra = sistema.ObtenerLetra(nombreDron, altura);
-                                        Console.WriteLine($"  Instrucción: {nombreDron} a {altura}m = '{letra}'");
+                                        Console.WriteLine($"  Letra obtenida: {nombreDron} @ {altura}m = '{letra}'");
                                     }
                                 }
 
-                                // Guardar instrucción con la letra obtenida
                                 _gestorMensajes.AgregarInstruccion(nombreMensaje, nombreDron, altura, letra);
                             }
                         }

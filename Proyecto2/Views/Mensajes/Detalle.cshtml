@@ -29,169 +29,177 @@
             </div>
             <div class="card-body">
                 <p><strong>Nombre:</strong> @Model.Nombre</p>
-                <p><strong>Texto Original:</strong> @(string.IsNullOrEmpty(Model.TextoOriginal) ? "Sin texto" : Model.TextoOriginal)</p>
-                <p><strong>Instrucciones:</strong> @Model.Instrucciones.Count</p>
+                <p><strong>Texto Original:</strong> @(string.IsNullOrEmpty(Model.TextoOriginal) ? "Sin texto" :
+                                        Model.TextoOriginal)</p>
+                    <p><strong>Instrucciones:</strong> @Model.Instrucciones.Count</p>
+                </div>
             </div>
-        </div>
         
-        <!-- Seleccionar sistema para agregar instrucción -->
-        <div class="card mt-3">
-            <div class="card-header bg-info text-white">
-                <h4>Seleccionar Sistema de Drones</h4>
-            </div>
-            <div class="card-body">
-                <form method="get" asp-action="Detalle">
-                    <input type="hidden" name="nombre" value="@Model.Nombre" />
-                    <div class="mb-3">
-                        <label class="form-label">Sistema de Drones</label>
-                        <select name="sistema" class="form-select" onchange="this.form.submit()">
-                            <option value="">-- Seleccione un sistema --</option>
-                            @{
-                                var sistemaActual = sistemas.GetPrimero();
-                                while (sistemaActual != null)
-                                {
-                                    if (sistemaSeleccionadoNombre == sistemaActual.Data.Nombre)
-                                    {
-                                        <option value="@sistemaActual.Data.Nombre" selected>@sistemaActual.Data.Nombre</option>
-                                    }
-                                    else
-                                    {
-                                        <option value="@sistemaActual.Data.Nombre">@sistemaActual.Data.Nombre</option>
-                                    }
-                                    sistemaActual = sistemaActual.Siguiente;
-                                }
-                            }
-                        </select>
-                        <small class="form-text text-muted">Seleccione un sistema para ver sus drones y codificaciones disponibles</small>
-                    </div>
-                </form>
-            </div>
-        </div>
-        
-        <!-- Agregar instrucción (solo dron y altura) -->
-        @if (sistemaSeleccionado != null)
-        {
+            <!-- Seleccionar sistema para agregar instrucción -->
             <div class="card mt-3">
-                <div class="card-header bg-success text-white">
-                    <h4>Agregar Instrucción</h4>
+                <div class="card-header bg-info text-white">
+                    <h4>Seleccionar Sistema de Drones</h4>
                 </div>
                 <div class="card-body">
-                    <form asp-action="AgregarInstruccion" method="post">
-                        @Html.AntiForgeryToken()
-                        <input type="hidden" name="nombreMensaje" value="@Model.Nombre" />
+                    <form method="get" asp-action="Detalle">
+                        <input type="hidden" name="nombre" value="@Model.Nombre" />
                         <div class="mb-3">
-                            <label class="form-label">Dron</label>
-                            <select name="nombreDron" class="form-select" required>
-                                <option value="">-- Seleccione un dron --</option>
+                            <label class="form-label">Sistema de Drones</label>
+                            <select name="sistema" class="form-select" onchange="this.form.submit()">
+                                <option value="">-- Seleccione un sistema --</option>
                                 @{
-                                    var dronSistema = sistemaSeleccionado.Drones.GetPrimero();
-                                    while (dronSistema != null)
+                                    var sistemaActual = sistemas.GetPrimero();
+                                    while (sistemaActual != null)
                                     {
-                                        <option value="@dronSistema.Data.Nombre">@dronSistema.Data.Nombre</option>
-                                        dronSistema = dronSistema.Siguiente;
+                                        if (sistemaSeleccionadoNombre == sistemaActual.Data.Nombre)
+                                        {
+                                            <option value="@sistemaActual.Data.Nombre" selected>@sistemaActual.Data.Nombre</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@sistemaActual.Data.Nombre">@sistemaActual.Data.Nombre</option>
+                                        }
+                                        sistemaActual = sistemaActual.Siguiente;
                                     }
                                 }
                             </select>
-                            <small class="form-text text-muted">Drones disponibles en el sistema @sistemaSeleccionado.Nombre</small>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Altura (1-100)</label>
-                            <input type="number" name="altura" class="form-control" min="1" max="100" required />
-                            <small class="form-text text-muted">La letra se obtendrá automáticamente de la codificación del sistema</small>
-                        </div>
-                        <button type="submit" class="btn btn-success">Agregar Instrucción</button>
-                    </form>
+                            <small class="form-text text-muted">Seleccione un sistema para ver sus drones y codificaciones
+                                disponibles</small>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        }
         
-        <!-- Enviar mensaje -->
-        <div class="card mt-3">
-            <div class="card-header bg-warning">
-                <h4>Enviar Mensaje</h4>
-            </div>
-            <div class="card-body">
-                <form asp-action="EnviarMensaje" method="post">
-                    @Html.AntiForgeryToken()
-                    <input type="hidden" name="nombreMensaje" value="@Model.Nombre" />
-                    <div class="mb-3">
-                        <label class="form-label">Seleccionar Sistema de Drones</label>
-                        <select name="nombreSistema" class="form-select" required>
-                            <option value="">-- Seleccione un sistema --</option>
-                            @{
-                                var sistemaEnvio = sistemas.GetPrimero();
-                                while (sistemaEnvio != null)
-                                {
-                                    <option value="@sistemaEnvio.Data.Nombre">@sistemaEnvio.Data.Nombre</option>
-                                    sistemaEnvio = sistemaEnvio.Siguiente;
-                                }
-                            }
-                        </select>
+                <!-- Agregar instrucción (solo dron y altura) -->
+                @if (sistemaSeleccionado != null)
+                {
+                    <div class="card mt-3">
+                        <div class="card-header bg-success text-white">
+                            <h4>Agregar Instrucción</h4>
+                        </div>
+                        <div class="card-body">
+                            <form asp-action="AgregarInstruccion" method="post">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="nombreMensaje" value="@Model.Nombre" />
+                                <div class="mb-3">
+                                    <label class="form-label">Dron</label>
+                                    <select name="nombreDron" class="form-select" required>
+                                        <option value="">-- Seleccione un dron --</option>
+                                        @{
+                                            var dronSistema = sistemaSeleccionado.Drones.GetPrimero();
+                                            while (dronSistema != null)
+                                            {
+                                                <option value="@dronSistema.Data.Nombre">@dronSistema.Data.Nombre</option>
+                                                dronSistema = dronSistema.Siguiente;
+                                            }
+                                        }
+                                    </select>
+                                    <small class="form-text text-muted">Drones disponibles en el sistema
+                                        @sistemaSeleccionado.Nombre</small>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Altura (1-100)</label>
+                                        <input type="number" name="altura" class="form-control" min="1" max="100" required />
+                                        <small class="form-text text-muted">La letra se obtendrá automáticamente de la codificación del
+                                            sistema</small>
+                                        </div>
+                                        <button type="submit" class="btn btn-success">Agregar Instrucción</button>
+                                    </form>
+                                </div>
+                            </div>
+                        }
+        
+                        <!-- Enviar mensaje -->
+                        <div class="card mt-3">
+                            <div class="card-header bg-warning">
+                                <h4>Enviar Mensaje</h4>
+                            </div>
+                            <div class="card-body">
+                                <form asp-action="EnviarMensaje" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="nombreMensaje" value="@Model.Nombre" />
+                                    <div class="mb-3">
+                                        <label class="form-label">Seleccionar Sistema de Drones</label>
+                                        <select name="nombreSistema" class="form-select" required>
+                                            <option value="">-- Seleccione un sistema --</option>
+                                            @{
+                                                var sistemaEnvio = sistemas.GetPrimero();
+                                                while (sistemaEnvio != null)
+                                                {
+                                                    <option value="@sistemaEnvio.Data.Nombre">@sistemaEnvio.Data.Nombre</option>
+                                                    sistemaEnvio = sistemaEnvio.Siguiente;
+                                                }
+                                            }
+                                        </select>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary"> Enviar Mensaje</button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
-                    <button type="submit" class="btn btn-primary"> Enviar Mensaje</button>
-                </form>
-            </div>
-        </div>
-    </div>
     
-    <!-- Lista de instrucciones -->
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-secondary text-white">
-                <h4>Instrucciones del Mensaje</h4>
-            </div>
-            <div class="card-body">
-                @if (Model.Instrucciones.Count == 0)
-                {
-                    <div class="alert alert-info">
-                        No hay instrucciones configuradas. Seleccione un sistema y agregue instrucciones.
-                    </div>
-                }
-                else
-                {
-                    <table class="table table-sm table-bordered">
-                        <thead class="table-dark">
-                            <tr>
-                                <th>#</th>
-                                <th>Dron</th>
-                                <th>Altura</th>
-                                <th>Letra (del sistema)</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @{
-                                var instruccionActual = Model.Instrucciones.GetPrimero();
-                                int index = 1;
-                                while (instruccionActual != null)
+                    <!-- Lista de instrucciones -->
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-secondary text-white">
+                                <h4>Instrucciones del Mensaje</h4>
+                            </div>
+                            <div class="card-body">
+                                @if (Model.Instrucciones.Count == 0)
                                 {
-                                    <tr>
-                                        <td>@index</td>
-                                        <td><strong>@instruccionActual.Data.NombreDron</strong></td>
-                                        <td>@instruccionActual.Data.AlturaObjetivo m</td>
-                                        <td>
-                                            @if (instruccionActual.Data.LetraRepresenta != '?')
-                                            {
-                                                <span class="badge bg-success fs-6">'@instruccionActual.Data.LetraRepresenta'</span>
-                                            }
-                                            else
-                                            {
-                                                <span class="badge bg-warning">Pendiente</span>
-                                            }
-                                        </td>
-                                    </tr>
-                                    instruccionActual = instruccionActual.Siguiente;
-                                    index++;
+                                    <div class="alert alert-info">
+                                        No hay instrucciones configuradas. Seleccione un sistema y agregue instrucciones.
+                                    </div>
                                 }
-                            }
-                        </tbody>
-                    </table>
-                }
-            </div>
-        </div>
-    </div>
-</div>
+                                else
+                                {
+                                    <table class="table table-sm table-bordered">
+                                        <thead class="table-dark">
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Dron</th>
+                                                <th>Altura</th>
+                                                <th>Letra (del sistema)</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                var instruccionActual = Model.Instrucciones.GetPrimero();
+                                                int index = 1;
+                                                while (instruccionActual != null)
+                                                {
+                                                    <tr>
+                                                        <td>@index</td>
+                                                        <td><strong>@instruccionActual.Data.NombreDron</strong></td>
+                                                        <td>@instruccionActual.Data.AlturaObjetivo m</td>
+                                                        <td>
+                                                            @if (instruccionActual.Data.LetraRepresenta == ' ')
+                                                            {
+                                                                <span class="badge bg-warning">[ESPACIO]</span>
+                                                            }
+                                                            else if (instruccionActual.Data.LetraRepresenta != '?')
+                                                            {
+                                                                <span class="badge bg-success fs-6">'@instruccionActual.Data.LetraRepresenta'</span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span class="badge bg-secondary">Pendiente</span>
+                                                            }
+                                                        </td>
+                                                    </tr>
+                                                    instruccionActual = instruccionActual.Siguiente;
+                                                    index++;
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
-<div class="mt-3">
-    <a href="/Mensajes/Index" class="btn btn-secondary">← Volver a la lista</a>
-    <a href="/Mensajes/GraficoPlan?nombre=@Model.Nombre" class="btn btn-info">Ver Gráfico</a>
-</div>
+                <div class="mt-3">
+                    <a href="/Mensajes/Index" class="btn btn-secondary">← Volver a la lista</a>
+                    <a href="/Mensajes/GraficoPlan?nombre=@Model.Nombre" class="btn btn-info">Ver Gráfico</a>
+                </div>

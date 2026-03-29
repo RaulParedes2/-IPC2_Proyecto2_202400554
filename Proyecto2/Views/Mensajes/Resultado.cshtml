@@ -1,39 +1,25 @@
 @{
-    ViewData["Title"] = "Resultado del Envío";
-    string planVuelo = ViewBag.PlanVuelo as string ?? "";
-    int tiempoOptimo = ViewBag.TiempoOptimo ?? 0;
-    string mensajeRecibido = ViewBag.MensajeRecibido as string ?? "";
-    string nombreMensaje = ViewBag.NombreMensaje as string ?? "";
-    string nombreSistema = ViewBag.NombreSistema as string ?? "";
+    ViewData["Title"] = "Resultado del Envio";
+    int tiempoOptimo = TempData["TiempoOptimo"] != null ? Convert.ToInt32(TempData["TiempoOptimo"]) : 0;
+    string mensajeRecibido = TempData["MensajeRecibido"] as string ?? "";
+    string nombreMensaje = TempData["NombreMensaje"] as string ?? "";
+    string nombreSistema = TempData["NombreSistema"] as string ?? "";
+    string imagenPath = TempData["ImagenPath"] as string ?? "";
 }
 
-<h2>Resultado del Envío</h2>
+<h2>Resultado del Envio</h2>
 
 <div class="row">
-    <div class="col-md-5">
-        <div class="card mb-3">
+    <div class="col-md-4">
+        <div class="card mb-4">
             <div class="card-header bg-success text-white">
-                <h4>Resumen del Envío</h4>
+                <h4>Resumen</h4>
             </div>
             <div class="card-body">
-                <table class="table table-borderless">
-                    <tr>
-                        <th style="width: 150px">Mensaje:</th>
-                        <td><strong>@nombreMensaje</strong></td>
-                    </tr>
-                    <tr>
-                        <th>Sistema:</th>
-                        <td>@nombreSistema</td>
-                    </tr>
-                    <tr>
-                        <th>Tiempo Óptimo:</th>
-                        <td><span class="badge bg-success fs-6">@tiempoOptimo segundos</span></td>
-                    </tr>
-                    <tr>
-                        <th>Mensaje Recibido:</th>
-                        <td><code class="fs-5">@mensajeRecibido</code></td>
-                    </tr>
-                </table>
+                <p><strong>Mensaje:</strong> @nombreMensaje</p>
+                <p><strong>Sistema:</strong> @nombreSistema</p>
+                <p><strong>Tiempo Optimo:</strong> @tiempoOptimo segundos</p>
+                <p><strong>Mensaje Recibido:</strong> <code class="fs-5">@mensajeRecibido</code></p>
             </div>
         </div>
         
@@ -42,39 +28,32 @@
                 <h4>Acciones</h4>
             </div>
             <div class="card-body">
-                <div class="d-grid gap-2">
-                    <a asp-action="GraficoPlan" asp-route-nombre="@nombreMensaje" class="btn btn-primary">
-                        Ver Gráfico del Plan
-                    </a>
-                    <a asp-action="Detalle" asp-route-nombre="@nombreMensaje" class="btn btn-secondary">
-                        Volver al Detalle
-                    </a>
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        Ver todos los Mensajes
-                    </a>
-                </div>
+                <a href="/Mensajes/Detalle?nombre=@nombreMensaje" class="btn btn-primary w-100 mb-2">Volver al Detalle</a>
+                <a href="/Mensajes/Index" class="btn btn-secondary w-100">Volver a Mensajes</a>
             </div>
         </div>
     </div>
     
-    <div class="col-md-7">
+    <div class="col-md-8">
         <div class="card">
-            <div class="card-header bg-dark text-white">
-                <h4>XML de Salida</h4>
+            <div class="card-header bg-primary text-white">
+                <h4>Secuencia de Instrucciones</h4>
             </div>
-            <div class="card-body">
-                <pre class="bg-light p-3" style="overflow-x: auto; max-height: 500px; font-size: 12px;">@planVuelo</pre>
-                <button class="btn btn-success mt-2" onclick="copiarAlPortapapeles()">Copiar XML</button>
+            <div class="card-body text-center">
+                @if (!string.IsNullOrEmpty(imagenPath))
+                {
+                    <img src="@imagenPath" alt="Plan de vuelo" class="img-fluid" style="max-width: 100%;" />
+                    <p class="mt-2 text-muted">Imagen generada con Graphviz</p>
+                }
+                else
+                {
+                    <div class="alert alert-warning">
+                        <h5>No se pudo generar la imagen</h5>
+                        <p>Verifique que Graphviz este instalado en su sistema.</p>
+                        <p>Puede descargarlo desde <a href="https://graphviz.org/download/" target="_blank">https://graphviz.org/download/</a></p>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function copiarAlPortapapeles() {
-        const codigo = document.querySelector('pre').innerText;
-        navigator.clipboard.writeText(codigo).then(() => {
-            alert('XML copiado al portapapeles');
-        });
-    }
-</script>

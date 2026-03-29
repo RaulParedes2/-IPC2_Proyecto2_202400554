@@ -10,15 +10,18 @@ namespace Proyecto2.Controllers
         private readonly GestorMensajes _gestorMensajes;
         private readonly GestorSistemas _gestorSistemas;
         private readonly Planificador _planificador;
+        private readonly GraphvizService _graphvizService;
+
 
         public MensajesController(
             GestorMensajes gestorMensajes,
             GestorSistemas gestorSistemas,
-            Planificador planificador)
+            Planificador planificador, GraphvizService graphvizService)
         {
             _gestorMensajes = gestorMensajes;
             _gestorSistemas = gestorSistemas;
             _planificador = planificador;
+            _graphvizService = graphvizService;
         }
 
         // Listar todos los mensajes
@@ -158,10 +161,6 @@ namespace Proyecto2.Controllers
                 return RedirectToAction("Detalle", new { nombre = nombreMensaje });
             }
 
-            Console.WriteLine($"Mensaje: {mensaje.Nombre}, Instrucciones: {mensaje.Instrucciones.Count}");
-            Console.WriteLine($"Sistema: {sistema.Nombre}, Drones: {sistema.Drones.Count}");
-
-            // Calcular el plan
             PlanVuelo? plan = _planificador.CalcularPlan(mensaje, sistema);
 
             if (plan == null)
@@ -170,22 +169,15 @@ namespace Proyecto2.Controllers
                 return RedirectToAction("Detalle", new { nombre = nombreMensaje });
             }
 
-            // Limpiar sesión antes de guardar
-            HttpContext.Session.Clear();
+            // Generar imagen del plan de vuelo
+            string nombreArchivo = $"plan_{mensaje.Nombre}_{DateTime.Now.Ticks}";
+            string? imagenPath = _graphvizService.GenerarTablaPlanVuelo(plan, nombreArchivo);
 
-            // Guardar solo datos básicos
-            HttpContext.Session.SetInt32("TiempoOptimo", plan.TiempoOptimo);
-            HttpContext.Session.SetString("MensajeRecibido", plan.MensajeRecibido);
-            HttpContext.Session.SetString("NombreMensaje", mensaje.Nombre);
-            HttpContext.Session.SetString("NombreSistema", sistema.Nombre);
-
-            // Guardar el XML comprimido o solo el resumen
-            string xmlResumen = plan.GenerarXML();
-            if (xmlResumen.Length > 10000)
-            {
-                xmlResumen = xmlResumen.Substring(0, 10000) + "...";
-            }
-            HttpContext.Session.SetString("PlanVuelo", xmlResumen);
+            TempData["TiempoOptimo"] = plan.TiempoOptimo;
+            TempData["MensajeRecibido"] = plan.MensajeRecibido;
+            TempData["NombreMensaje"] = mensaje.Nombre;
+            TempData["NombreSistema"] = sistema.Nombre;
+            TempData["ImagenPath"] = imagenPath;
 
             return RedirectToAction("Resultado");
         }
@@ -209,15 +201,14 @@ namespace Proyecto2.Controllers
             Mensaje? mensaje = _gestorMensajes.ObtenerPorNombre(nombre);
             if (mensaje == null)
             {
-                Console.WriteLine($"Mensaje no encontrado: {nombre}");
-                return NotFound();
+                TempData["Error"] = $"Mensaje '{nombre}' no encontrado";
+                return RedirectToAction("Index");
             }
 
             ViewBag.Mensaje = mensaje;
             ViewBag.Sistemas = _gestorSistemas.ObtenerTodos();
             return View();
         }
-
         [HttpPost]
         public IActionResult GenerarGrafico(string nombreMensaje, string nombreSistema)
         {
@@ -246,11 +237,14 @@ namespace Proyecto2.Controllers
                 return RedirectToAction("GraficoPlan", new { nombre = nombreMensaje });
             }
 
-            string dotCode = plan.ObtenerGrafico();
-            ViewBag.DotCode = dotCode;
+            string nombreArchivo = $"plan_{mensaje.Nombre}_{DateTime.Now.Ticks}";
+            string? imagenPath = _graphvizService.GenerarTablaPlanVuelo(plan, nombreArchivo);
+
+            ViewBag.ImagenPath = imagenPath;
             ViewBag.NombreMensaje = mensaje.Nombre;
             ViewBag.NombreSistema = sistema.Nombre;
             ViewBag.TiempoOptimo = plan.TiempoOptimo;
+            ViewBag.MensajeRecibido = plan.MensajeRecibido;
 
             return View("GraficoResultado");
         }

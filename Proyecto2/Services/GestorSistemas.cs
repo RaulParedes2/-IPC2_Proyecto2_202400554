@@ -1,3 +1,4 @@
+using System;
 using Proyecto2.Models;
 using Proyecto2.TDAs;
 
@@ -28,19 +29,28 @@ namespace Proyecto2.Services
                 return false;
 
             sistemas.Agregar(new SistemaDrones(nombre));
+            Console.WriteLine($"Sistema agregado: {nombre}");
             return true;
         }
 
-        public bool AgregarDronASistema(string nombreSistema, string nombreDron, int alturaInicial = 1)
+        public bool AgregarDronASistema(string nombreSistema, string nombreDron)
         {
             SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
             if (sistema == null)
+            {
+                Console.WriteLine($"Sistema {nombreSistema} no encontrado");
                 return false;
+            }
 
             if (sistema.Drones.Existe(nombreDron))
+            {
+                Console.WriteLine($"Dron {nombreDron} ya existe en sistema {nombreSistema}");
                 return false;
+            }
 
-            sistema.AgregarDron(nombreDron, alturaInicial);
+            Dron? dron = new Dron(nombreDron);
+            sistema.AgregarDron(dron);
+            Console.WriteLine($"Dron {nombreDron} agregado al sistema {nombreSistema}");
             return true;
         }
 
@@ -48,46 +58,24 @@ namespace Proyecto2.Services
         {
             SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
             if (sistema == null)
+            {
+                Console.WriteLine($"Sistema {nombreSistema} no encontrado");
                 return false;
+            }
 
             if (!sistema.Drones.Existe(nombreDron))
+            {
+                Console.WriteLine($"Dron {nombreDron} no existe en sistema {nombreSistema}");
                 return false;
+            }
 
             sistema.ConfigurarCodificacion(nombreDron, altura, letra);
+            Console.WriteLine($"Codificacion configurada: {nombreDron} @ {altura}m = '{letra}'");
             return true;
         }
-
-        public char ObtenerLetra(string nombreSistema, string nombreDron, int altura)
+        public bool ExisteSistema(string nombre)
         {
-            SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
-            if (sistema == null)
-                return '?';
-
-            return sistema.ObtenerLetra(nombreDron, altura);
-        }
-
-        public ListaDrones? ObtenerDronesSistema(string nombreSistema)
-        {
-            SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
-            if (sistema == null)
-                return null;
-
-            return sistema.Drones;
-        }
-
-        public void VerificarCodificacion(string nombreSistema)
-        {
-            SistemaDrones? sistema = sistemas.ObtenerPorNombre(nombreSistema);
-            if (sistema != null)
-            {
-                Console.WriteLine($"=== Codificación del sistema: {nombreSistema} ===");
-                var celda = sistema.Codificacion.GetPrimero();
-                while (celda != null)
-                {
-                    Console.WriteLine($"{celda.NombreDron} a {celda.Altura}m = '{celda.Letra}'");
-                    celda = celda.Siguiente;
-                }
-            }
+            return sistemas.Existe(nombre);
         }
 
         public bool Eliminar(string nombre)
@@ -95,10 +83,6 @@ namespace Proyecto2.Services
             return sistemas.Eliminar(nombre);
         }
 
-        public bool ExisteSistema(string nombre)
-        {
-            return sistemas.Existe(nombre);
-        }
         public int CantidadSistemas()
         {
             return sistemas.Count;
