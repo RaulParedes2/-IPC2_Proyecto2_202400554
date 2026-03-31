@@ -11,23 +11,6 @@ namespace Proyecto2.Services
         {
             drones = new ListaDrones();
 
-             //------------------------------------// Agregar algunos drones de ejemplo
-             /*
-            InicializarDronesEjemplo();
-        }
-        private void InicializarDronesEjemplo()
-        {
-            if (drones.EstaVacia)
-            {
-                drones.Agregar(new Dron("Dron01"));
-                drones.Agregar(new Dron("Dron02"));
-                drones.Agregar(new Dron("Dron03"));
-                drones.Agregar(new Dron("Dron04"));
-            }
-        }
-        //-----------------------------------------------------------------------------
-        
-        */
         }
         public ListaDrones ObtenerTodos()
         {

@@ -70,30 +70,26 @@ namespace Proyecto2.Controllers
                 return NotFound();
             }
 
-            ViewBag.Sistemas = _gestorSistemas.ObtenerTodos();
+            ListaSistemasDrones sistemas = _gestorSistemas.ObtenerTodosOrdenados();
+            ViewBag.Sistemas = sistemas;
 
-            // Sistema seleccionado para agregar instrucciones
+            // Sistema seleccionado por defecto (el primero o el que viene en la URL)
             SistemaDrones? sistemaSeleccionado = null;
             if (!string.IsNullOrEmpty(sistema))
             {
                 sistemaSeleccionado = _gestorSistemas.ObtenerPorNombre(sistema);
             }
-            else
+
+            if (sistemaSeleccionado == null)
             {
-                // Si no hay sistema seleccionado, usar el primero disponible
-                var sistemas = _gestorSistemas.ObtenerTodos();
-                if (sistemas.GetPrimero() != null)
-                {
-                    sistemaSeleccionado = sistemas.GetPrimero()!.Data;
-                }
+                sistemaSeleccionado = sistemas.GetPrimero()?.Data;
             }
 
             ViewBag.SistemaSeleccionado = sistemaSeleccionado;
-            ViewBag.SistemaSeleccionadoNombre = sistemaSeleccionado?.Nombre;
+            ViewBag.SistemaSeleccionadoNombre = sistemaSeleccionado?.Nombre ?? "";
 
             return View(mensaje);
         }
-
         // Agregar instrucción al mensaje
         [HttpPost]
         public IActionResult AgregarInstruccion(string nombreMensaje, string nombreDron, int altura)
@@ -146,9 +142,9 @@ namespace Proyecto2.Controllers
         {
             Console.WriteLine($"=== Enviando mensaje: {nombreMensaje} al sistema: {nombreSistema} ===");
 
-            if (string.IsNullOrEmpty(nombreMensaje) || string.IsNullOrEmpty(nombreSistema))
+            if (string.IsNullOrEmpty(nombreSistema))
             {
-                TempData["Error"] = "Mensaje o sistema no especificado";
+                TempData["Error"] = "Debe seleccionar un sistema de drones";
                 return RedirectToAction("Detalle", new { nombre = nombreMensaje });
             }
 
@@ -161,6 +157,26 @@ namespace Proyecto2.Controllers
                 return RedirectToAction("Detalle", new { nombre = nombreMensaje });
             }
 
+            // VALIDAR: Verificar que todos los drones existan en el sistema
+            NodoInstruccionEmision? instActual = mensaje.Instrucciones.GetPrimero();
+            bool compatible = true;
+            while (instActual != null)
+            {
+                if (!sistema.Drones.Existe(instActual.Data.NombreDron))
+                {
+                    compatible = false;
+                    Console.WriteLine($"ERROR: Dron '{instActual.Data.NombreDron}' no existe en sistema '{sistema.Nombre}'");
+                    break;
+                }
+                instActual = instActual.Siguiente;
+            }
+
+            if (!compatible)
+            {
+                TempData["Error"] = $"El mensaje '{mensaje.Nombre}' no es compatible con el sistema '{sistema.Nombre}'. Los drones no coinciden.";
+                return RedirectToAction("Detalle", new { nombre = nombreMensaje });
+            }
+
             PlanVuelo? plan = _planificador.CalcularPlan(mensaje, sistema);
 
             if (plan == null)
@@ -169,15 +185,11 @@ namespace Proyecto2.Controllers
                 return RedirectToAction("Detalle", new { nombre = nombreMensaje });
             }
 
-            // Generar imagen del plan de vuelo
-            string nombreArchivo = $"plan_{mensaje.Nombre}_{DateTime.Now.Ticks}";
-            string? imagenPath = _graphvizService.GenerarTablaPlanVuelo(plan, nombreArchivo);
-
+            TempData["PlanVuelo"] = plan.GenerarXML();
             TempData["TiempoOptimo"] = plan.TiempoOptimo;
             TempData["MensajeRecibido"] = plan.MensajeRecibido;
             TempData["NombreMensaje"] = mensaje.Nombre;
             TempData["NombreSistema"] = sistema.Nombre;
-            TempData["ImagenPath"] = imagenPath;
 
             return RedirectToAction("Resultado");
         }

@@ -34,16 +34,16 @@ public class ColaEnteros
     }
 
     public int Count()
-{
-    int c = 0;
-    NodoEntero? aux = frente;
-    while (aux != null)
     {
-        c++;
-        aux = aux.Siguiente;
+        int c = 0;
+        NodoEntero? aux = frente;
+        while (aux != null)
+        {
+            c++;
+            aux = aux.Siguiente;
+        }
+        return c;
     }
-    return c;
-}
 }
 
 public class NodoEntero

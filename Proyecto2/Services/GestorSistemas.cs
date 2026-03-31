@@ -48,7 +48,7 @@ namespace Proyecto2.Services
                 return false;
             }
 
-            Dron? dron = new Dron(nombreDron);
+            Dron dron = new Dron(nombreDron);
             sistema.AgregarDron(dron);
             Console.WriteLine($"Dron {nombreDron} agregado al sistema {nombreSistema}");
             return true;
@@ -73,6 +73,7 @@ namespace Proyecto2.Services
             Console.WriteLine($"Codificacion configurada: {nombreDron} @ {altura}m = '{letra}'");
             return true;
         }
+
         public bool ExisteSistema(string nombre)
         {
             return sistemas.Existe(nombre);
@@ -89,44 +90,8 @@ namespace Proyecto2.Services
         }
 
         public ListaSistemasDrones ObtenerTodosOrdenados()
-{
-    ListaSistemasDrones ordenada = new ListaSistemasDrones();
-    
-    if (sistemas.EstaVacia)
-        return ordenada;
-    
-    // Copiar a array temporal
-    SistemaDrones[] temporal = new SistemaDrones[sistemas.Count];
-    NodoSistemaDrones? actual = sistemas.GetPrimero();
-    int idx = 0;
-    while (actual != null)
-    {
-        temporal[idx] = actual.Data;
-        actual = actual.Siguiente;
-        idx++;
-    }
-    
-    // Ordenar
-    for (int i = 0; i < sistemas.Count - 1; i++)
-    {
-        for (int j = 0; j < sistemas.Count - i - 1; j++)
         {
-            if (string.Compare(temporal[j].Nombre, temporal[j + 1].Nombre) > 0)
-            {
-                SistemaDrones temp = temporal[j];
-                temporal[j] = temporal[j + 1];
-                temporal[j + 1] = temp;
-            }
+            return sistemas.ObtenerOrdenadosAlfabeticamente();
         }
-    }
-    
-    // Reconstruir
-    for (int i = 0; i < sistemas.Count; i++)
-    {
-        ordenada.Agregar(temporal[i]);
-    }
-    
-    return ordenada;
-}
     }
 }

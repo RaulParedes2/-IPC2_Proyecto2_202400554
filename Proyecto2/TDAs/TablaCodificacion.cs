@@ -77,6 +77,31 @@ namespace Proyecto2.TDAs
             return false;
         }
 
+        public bool EliminarCombinacion(string nombreDron, int altura)
+        {
+            if (primera == null) return false;
+
+            if (primera.NombreDron == nombreDron && primera.Altura == altura)
+            {
+                primera = primera.Siguiente;
+                count--;
+                return true;
+            }
+
+            CeldaCodificacion actual = primera;
+            while (actual.Siguiente != null)
+            {
+                if (actual.Siguiente.NombreDron == nombreDron && actual.Siguiente.Altura == altura)
+                {
+                    actual.Siguiente = actual.Siguiente.Siguiente;
+                    count--;
+                    return true;
+                }
+                actual = actual.Siguiente;
+            }
+            return false;
+        }
+
         public int Count { get { return count; } }
 
         public CeldaCodificacion? GetPrimero()
@@ -98,32 +123,6 @@ namespace Proyecto2.TDAs
                 accion(actual);
                 actual = actual.Siguiente;
             }
-        }
-
-        public bool EliminarCombinacion(string nombreDron, int altura)
-        {
-            if (primera == null) return false;
-
-            // Si es el primero
-            if (primera.NombreDron == nombreDron && primera.Altura == altura)
-            {
-                primera = primera.Siguiente;
-                count--;
-                return true;
-            }
-
-            CeldaCodificacion actual = primera;
-            while (actual.Siguiente != null)
-            {
-                if (actual.Siguiente.NombreDron == nombreDron && actual.Siguiente.Altura == altura)
-                {
-                    actual.Siguiente = actual.Siguiente.Siguiente;
-                    count--;
-                    return true;
-                }
-                actual = actual.Siguiente;
-            }
-            return false;
         }
     }
 }

@@ -1,4 +1,5 @@
-/*
+
+
 using System;
 using Proyecto2.Models;
 using Proyecto2.Models.Enums;
@@ -13,256 +14,69 @@ namespace Proyecto2.Services
             if (mensaje.Instrucciones.Count == 0)
                 return null;
 
+            // VALIDAR: Verificar que todos los drones de las instrucciones existan en el sistema
+            NodoInstruccionEmision? instActual = mensaje.Instrucciones.GetPrimero();
+            bool dronNoEncontrado = false;
+
+            while (instActual != null)
+            {
+                string nombreDron = instActual.Data.NombreDron;
+                if (!sistema.Drones.Existe(nombreDron))
+                {
+                    Console.WriteLine($"ERROR: El dron '{nombreDron}' no existe en el sistema '{sistema.Nombre}'");
+                    dronNoEncontrado = true;
+                }
+                instActual = instActual.Siguiente;
+            }
+
+            if (dronNoEncontrado)
+            {
+                Console.WriteLine("No se puede calcular el plan. Los drones no coinciden con el sistema.");
+                return null;
+            }
+
             Console.WriteLine($"=== Calculando plan para mensaje: {mensaje.Nombre} ===");
 
             // Obtener lista de drones ordenados alfabéticamente
             ListaDrones dronesSistema = sistema.Drones.ObtenerOrdenadosAlfabeticamente();
             int cantidadDrones = dronesSistema.Count;
 
-            // Nombres de drones en orden alfabético
-            string[] nombresDrones = new string[cantidadDrones];
-            int idx = 0;
+            // Lista de nombres de drones en orden alfabético
+            ListaNombres nombresDrones = new ListaNombres();
             NodoDron? dronActual = dronesSistema.GetPrimero();
             while (dronActual != null)
             {
-                nombresDrones[idx] = dronActual.Data.Nombre;
-                idx++;
+                nombresDrones.Agregar(dronActual.Data.Nombre);
                 dronActual = dronActual.Siguiente;
             }
 
             // Altura actual de cada dron (comienzan en 1)
-            int[] alturas = new int[cantidadDrones];
+            ListaAlturas alturas = new ListaAlturas();
             for (int i = 0; i < cantidadDrones; i++)
             {
-                alturas[i] = 1;
+                alturas.Agregar(0); // CORREGIDO: comienzan en 1, no en 0
             }
 
             // Crear cola de instrucciones por dron
-            ColaInstrucciones[] colasPorDron = new ColaInstrucciones[cantidadDrones];
+            ListaColasInstrucciones colasPorDron = new ListaColasInstrucciones();
             for (int i = 0; i < cantidadDrones; i++)
             {
-                colasPorDron[i] = new ColaInstrucciones();
+                colasPorDron.Agregar(new ColaInstrucciones());
             }
 
             // Cargar instrucciones en las colas correspondientes
-            NodoInstruccionEmision? instActual = mensaje.Instrucciones.GetPrimero();
-            while (instActual != null)
-            {
-                string nombreDron = instActual.Data.NombreDron;
-                for (int i = 0; i < cantidadDrones; i++)
-                {
-                    if (nombresDrones[i] == nombreDron)
-                    {
-                        colasPorDron[i].Encolar(instActual.Data);
-                        Console.WriteLine($"Instrucción para {nombreDron}: altura {instActual.Data.AlturaObjetivo}");
-                        break;
-                    }
-                }
-                instActual = instActual.Siguiente;
-            }
-
-            PlanVuelo plan = new PlanVuelo();
-            plan.NombreMensaje = mensaje.Nombre;
-            plan.NombreSistema = sistema.Nombre;
-            plan.MensajeOriginal = mensaje.TextoOriginal;
-
-            int tiempo = 1;
-            string mensajeRecibido = "";
-            int instruccionesProcesadas = 0;
-            int totalInstrucciones = mensaje.Instrucciones.Count;
-
-            // Estado de cada dron
-            int[] objetivo = new int[cantidadDrones];
-            bool[] tieneObjetivo = new bool[cantidadDrones];
-            bool[] listoParaEmitir = new bool[cantidadDrones];
-
-            for (int i = 0; i < cantidadDrones; i++)
-            {
-                objetivo[i] = 1;
-                tieneObjetivo[i] = false;
-                listoParaEmitir[i] = false;
-            }
-
-            // Asignar primera instrucción a cada dron (movimiento paralelo desde el inicio)
-            for (int i = 0; i < cantidadDrones; i++)
-            {
-                if (!colasPorDron[i].EstaVacia())
-                {
-                    InstruccionEmision? primera = colasPorDron[i].Desencolar();
-                    if (primera != null)
-                    {
-                        objetivo[i] = primera.AlturaObjetivo;
-                        tieneObjetivo[i] = true;
-                        Console.WriteLine($"Asignando a {nombresDrones[i]} altura objetivo {objetivo[i]}");
-                    }
-                }
-            }
-
-            // Cola de instrucciones en orden global (para saber qué emitir después)
-            ColaInstrucciones colaGlobal = new ColaInstrucciones();
             instActual = mensaje.Instrucciones.GetPrimero();
             while (instActual != null)
             {
-                colaGlobal.Encolar(instActual.Data);
-                instActual = instActual.Siguiente;
-            }
-
-            while (instruccionesProcesadas < totalInstrucciones)
-            {
-                PlanVuelo.AccionPorSegundo segundo = new PlanVuelo.AccionPorSegundo(tiempo);
-
-                // Inicializar todos con Esperar
-                for (int i = 0; i < cantidadDrones; i++)
-                {
-                    segundo.AgregarAccion(nombresDrones[i], "Esperar", alturas[i]);
-                }
-
-                // Mover drones hacia sus objetivos
-                for (int i = 0; i < cantidadDrones; i++)
-                {
-                    if (tieneObjetivo[i] && !listoParaEmitir[i])
-                    {
-                        if (alturas[i] == objetivo[i])
-                        {
-                            listoParaEmitir[i] = true;
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} llega a altura {alturas[i]}");
-                        }
-                        else if (alturas[i] < objetivo[i])
-                        {
-                            alturas[i]++;
-                            segundo.ReemplazarAccion(nombresDrones[i], "Subir", alturas[i]);
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} sube a {alturas[i]}");
-                        }
-                        else if (alturas[i] > objetivo[i])
-                        {
-                            alturas[i]--;
-                            segundo.ReemplazarAccion(nombresDrones[i], "Bajar", alturas[i]);
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} baja a {alturas[i]}");
-                        }
-                    }
-                }
-
-                // Emitir en orden de instrucciones (la siguiente instrucción en la cola global que esté lista)
-                InstruccionEmision? siguienteEmitir = null;
-                if (!colaGlobal.EstaVacia())
-                {
-                    siguienteEmitir = colaGlobal.VerFrente();
-                }
-
-                if (siguienteEmitir != null)
-                {
-                    int dronIdx = ObtenerIndiceDron(nombresDrones, siguienteEmitir.NombreDron);
-                    if (dronIdx >= 0 && listoParaEmitir[dronIdx])
-                    {
-                        segundo.ReemplazarAccion(nombresDrones[dronIdx], "Emitir Luz", alturas[dronIdx]);
-                        char letra = sistema.ObtenerLetra(nombresDrones[dronIdx], alturas[dronIdx]);
-                        mensajeRecibido += letra;
-                        Console.WriteLine($"Segundo {tiempo}: {nombresDrones[dronIdx]} emite '{letra}' a altura {alturas[dronIdx]}");
-                        listoParaEmitir[dronIdx] = false;
-                        tieneObjetivo[dronIdx] = false;
-                        colaGlobal.Desencolar();
-                        instruccionesProcesadas++;
-
-                        // En la parte de asignar siguiente instrucción después de emitir
-                        if (!colasPorDron[dronIdx].EstaVacia())
-                        {
-                            InstruccionEmision? siguiente = colasPorDron[dronIdx].Desencolar();
-                            if (siguiente != null)
-                            {
-                                objetivo[dronIdx] = siguiente.AlturaObjetivo;
-                                tieneObjetivo[dronIdx] = true;
-                                // IMPORTANTE: No reiniciar listoParaEmitir aquí, el dron necesita moverse
-                                Console.WriteLine($"Asignando a {nombresDrones[dronIdx]} nueva altura objetivo {objetivo[dronIdx]}");
-                            }
-                        }
-                    }
-                }
-
-                plan.AgregarSegundo(segundo);
-                tiempo++;
-
-                if (tiempo > 500) break;
-            }
-
-            plan.MensajeRecibido = mensajeRecibido;
-            plan.TiempoOptimo = tiempo - 1;
-
-            Console.WriteLine($"Plan completado en {plan.TiempoOptimo} segundos");
-            Console.WriteLine($"Mensaje recibido: {mensajeRecibido}");
-
-            return plan;
-        }
-
-        private int ObtenerIndiceDron(string[] nombres, string nombreDron)
-        {
-            for (int i = 0; i < nombres.Length; i++)
-            {
-                if (nombres[i] == nombreDron)
-                    return i;
-            }
-            return -1;
-        }
-    }
-}
-*/
-
-using System;
-using Proyecto2.Models;
-using Proyecto2.Models.Enums;
-using Proyecto2.TDAs;
-
-namespace Proyecto2.Services
-{
-    public class Planificador
-    {
-        public PlanVuelo? CalcularPlan(Mensaje mensaje, SistemaDrones sistema)
-        {
-            if (mensaje.Instrucciones.Count == 0)
-                return null;
-
-            Console.WriteLine($"=== Calculando plan para mensaje: {mensaje.Nombre} ===");
-
-            // Obtener lista de drones ordenados alfabéticamente
-            ListaDrones dronesSistema = sistema.Drones.ObtenerOrdenadosAlfabeticamente();
-            int cantidadDrones = dronesSistema.Count;
-            
-            // Nombres de drones en orden alfabético
-            string[] nombresDrones = new string[cantidadDrones];
-            int idx = 0;
-            NodoDron? dronActual = dronesSistema.GetPrimero();
-            while (dronActual != null)
-            {
-                nombresDrones[idx] = dronActual.Data.Nombre;
-                idx++;
-                dronActual = dronActual.Siguiente;
-            }
-
-            // Altura actual de cada dron (comienzan en 1)
-            int[] alturas = new int[cantidadDrones];
-            for (int i = 0; i < cantidadDrones; i++)
-            {
-                alturas[i] = 0;
-            }
-
-            // Crear cola de instrucciones por dron
-            ColaInstrucciones[] colasPorDron = new ColaInstrucciones[cantidadDrones];
-            for (int i = 0; i < cantidadDrones; i++)
-            {
-                colasPorDron[i] = new ColaInstrucciones();
-            }
-
-            // Cargar instrucciones en las colas correspondientes
-            NodoInstruccionEmision? instActual = mensaje.Instrucciones.GetPrimero();
-            while (instActual != null)
-            {
                 string nombreDron = instActual.Data.NombreDron;
-                for (int i = 0; i < cantidadDrones; i++)
+                int dronIdx = nombresDrones.ObtenerIndice(nombreDron);
+                if (dronIdx >= 0)
                 {
-                    if (nombresDrones[i] == nombreDron)
+                    ColaInstrucciones? cola = colasPorDron.ObtenerPorIndice(dronIdx);
+                    if (cola != null)
                     {
-                        colasPorDron[i].Encolar(instActual.Data);
+                        cola.Encolar(instActual.Data);
                         Console.WriteLine($"Instrucción para {nombreDron}: altura {instActual.Data.AlturaObjetivo}");
-                        break;
                     }
                 }
                 instActual = instActual.Siguiente;
@@ -279,30 +93,29 @@ namespace Proyecto2.Services
             int totalInstrucciones = mensaje.Instrucciones.Count;
 
             // Estado de cada dron
-            int[] objetivo = new int[cantidadDrones];
-            bool[] tieneObjetivo = new bool[cantidadDrones];
-            bool[] listoParaEmitir = new bool[cantidadDrones];
-            bool[] haEmitido = new bool[cantidadDrones];
-            
+            ListaObjetivos objetivo = new ListaObjetivos();
+            ListaBooleanos tieneObjetivo = new ListaBooleanos();
+            ListaBooleanos listoParaEmitir = new ListaBooleanos();
+
             for (int i = 0; i < cantidadDrones; i++)
             {
-                objetivo[i] = 1;
-                tieneObjetivo[i] = false;
-                listoParaEmitir[i] = false;
-                haEmitido[i] = false;
+                objetivo.Agregar(1);
+                tieneObjetivo.Agregar(false);
+                listoParaEmitir.Agregar(false);
             }
 
             // Asignar primera instrucción a cada dron
             for (int i = 0; i < cantidadDrones; i++)
             {
-                if (!colasPorDron[i].EstaVacia())
+                ColaInstrucciones? cola = colasPorDron.ObtenerPorIndice(i);
+                if (cola != null && !cola.EstaVacia())
                 {
-                    InstruccionEmision? primera = colasPorDron[i].Desencolar();
+                    InstruccionEmision? primera = cola.Desencolar();
                     if (primera != null)
                     {
-                        objetivo[i] = primera.AlturaObjetivo;
-                        tieneObjetivo[i] = true;
-                        Console.WriteLine($"Asignando a {nombresDrones[i]} altura objetivo {objetivo[i]}");
+                        objetivo.Actualizar(i, primera.AlturaObjetivo);
+                        tieneObjetivo.Actualizar(i, true);
+                        Console.WriteLine($"Asignando a {nombresDrones.Obtener(i)} altura objetivo {primera.AlturaObjetivo}");
                     }
                 }
             }
@@ -319,93 +132,88 @@ namespace Proyecto2.Services
             while (instruccionesProcesadas < totalInstrucciones)
             {
                 PlanVuelo.AccionPorSegundo segundo = new PlanVuelo.AccionPorSegundo(tiempo);
-                
+
                 // Inicializar todos con Esperar
                 for (int i = 0; i < cantidadDrones; i++)
                 {
-                    segundo.AgregarAccion(nombresDrones[i], "Esperar", alturas[i]);
+                    segundo.AgregarAccion(nombresDrones.Obtener(i), "Esperar", alturas.ObtenerPorIndice(i));
                 }
-                
+
                 // Mover drones hacia sus objetivos
                 for (int i = 0; i < cantidadDrones; i++)
                 {
-                    if (tieneObjetivo[i] && !listoParaEmitir[i])
+                    if (tieneObjetivo.Obtener(i) && !listoParaEmitir.Obtener(i))
                     {
-                        if (alturas[i] == objetivo[i])
+                        int alturaActual = alturas.ObtenerPorIndice(i);
+                        int objetivoActual = objetivo.Obtener(i);
+
+                        if (alturaActual == objetivoActual)
                         {
-                            listoParaEmitir[i] = true;
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} llega a altura {alturas[i]}");
+                            listoParaEmitir.Actualizar(i, true);
+                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones.Obtener(i)} llega a altura {alturaActual}");
                         }
-                        else if (alturas[i] < objetivo[i])
+                        else if (alturaActual < objetivoActual)
                         {
-                            alturas[i]++;
-                            segundo.ReemplazarAccion(nombresDrones[i], "Subir", alturas[i]);
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} sube a {alturas[i]}");
+                            int nuevaAltura = alturaActual + 1;
+                            alturas.ActualizarPorIndice(i, nuevaAltura);
+                            segundo.ReemplazarAccion(nombresDrones.Obtener(i), "Subir", nuevaAltura);
+                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones.Obtener(i)} sube a {nuevaAltura}");
                         }
-                        else if (alturas[i] > objetivo[i])
+                        else if (alturaActual > objetivoActual)
                         {
-                            alturas[i]--;
-                            segundo.ReemplazarAccion(nombresDrones[i], "Bajar", alturas[i]);
-                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones[i]} baja a {alturas[i]}");
+                            int nuevaAltura = alturaActual - 1;
+                            alturas.ActualizarPorIndice(i, nuevaAltura);
+                            segundo.ReemplazarAccion(nombresDrones.Obtener(i), "Bajar", nuevaAltura);
+                            Console.WriteLine($"Segundo {tiempo}: {nombresDrones.Obtener(i)} baja a {nuevaAltura}");
                         }
                     }
                 }
-                
+
                 // Emitir en orden de instrucciones
                 InstruccionEmision? siguienteEmitir = colaGlobal.VerFrente();
                 if (siguienteEmitir != null)
                 {
-                    int dronIdx = ObtenerIndiceDron(nombresDrones, siguienteEmitir.NombreDron);
-                    if (dronIdx >= 0 && listoParaEmitir[dronIdx])
+                    int dronIdx = nombresDrones.ObtenerIndice(siguienteEmitir.NombreDron);
+                    if (dronIdx >= 0 && listoParaEmitir.Obtener(dronIdx))
                     {
-                        segundo.ReemplazarAccion(nombresDrones[dronIdx], "Emitir Luz", alturas[dronIdx]);
-                        char letra = sistema.ObtenerLetra(nombresDrones[dronIdx], alturas[dronIdx]);
+                        int alturaActual = alturas.ObtenerPorIndice(dronIdx);
+                        segundo.ReemplazarAccion(nombresDrones.Obtener(dronIdx), "Emitir Luz", alturaActual);
+                        char letra = sistema.ObtenerLetra(nombresDrones.Obtener(dronIdx), alturaActual);
                         mensajeRecibido += letra;
-                        Console.WriteLine($"Segundo {tiempo}: {nombresDrones[dronIdx]} emite '{letra}' a altura {alturas[dronIdx]}");
-                        listoParaEmitir[dronIdx] = false;
-                        tieneObjetivo[dronIdx] = false;
-                        haEmitido[dronIdx] = true;
+                        Console.WriteLine($"Segundo {tiempo}: {nombresDrones.Obtener(dronIdx)} emite '{letra}' a altura {alturaActual}");
+                        listoParaEmitir.Actualizar(dronIdx, false);
+                        tieneObjetivo.Actualizar(dronIdx, false);
                         colaGlobal.Desencolar();
                         instruccionesProcesadas++;
-                        
+
                         // Asignar siguiente instrucción para este dron si existe
-                        if (!colasPorDron[dronIdx].EstaVacia())
+                        ColaInstrucciones? cola = colasPorDron.ObtenerPorIndice(dronIdx);
+                        if (cola != null && !cola.EstaVacia())
                         {
-                            InstruccionEmision? siguiente = colasPorDron[dronIdx].Desencolar();
+                            InstruccionEmision? siguiente = cola.Desencolar();
                             if (siguiente != null)
                             {
-                                objetivo[dronIdx] = siguiente.AlturaObjetivo;
-                                tieneObjetivo[dronIdx] = true;
-                                listoParaEmitir[dronIdx] = false;
-                                Console.WriteLine($"Asignando a {nombresDrones[dronIdx]} nueva altura objetivo {objetivo[dronIdx]}");
+                                objetivo.Actualizar(dronIdx, siguiente.AlturaObjetivo);
+                                tieneObjetivo.Actualizar(dronIdx, true);
+                                Console.WriteLine($"Asignando a {nombresDrones.Obtener(dronIdx)} nueva altura objetivo {siguiente.AlturaObjetivo}");
                             }
                         }
                     }
                 }
-                
+
                 plan.AgregarSegundo(segundo);
                 tiempo++;
-                
+
                 if (tiempo > 500) break;
             }
 
             plan.MensajeRecibido = mensajeRecibido;
             plan.TiempoOptimo = tiempo - 1;
-            
+
             Console.WriteLine($"Plan completado en {plan.TiempoOptimo} segundos");
             Console.WriteLine($"Mensaje recibido: {mensajeRecibido}");
-            
+
             return plan;
-        }
-        
-        private int ObtenerIndiceDron(string[] nombres, string nombreDron)
-        {
-            for (int i = 0; i < nombres.Length; i++)
-            {
-                if (nombres[i] == nombreDron)
-                    return i;
-            }
-            return -1;
         }
     }
 }

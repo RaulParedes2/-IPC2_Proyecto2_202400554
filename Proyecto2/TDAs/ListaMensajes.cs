@@ -92,43 +92,64 @@ namespace Proyecto2.TDAs
         public ListaMensajes ObtenerOrdenadosAlfabeticamente()
         {
             ListaMensajes ordenada = new ListaMensajes();
-            
+
             if (primero == null)
                 return ordenada;
 
+            ListaMensajes listaTemp = new ListaMensajes();
             NodoMensaje? actual = primero;
             while (actual != null)
             {
-                Mensaje mensajeActual = actual.Data;
-                
-                if (ordenada.primero == null)
+                listaTemp.Agregar(actual.Data);
+                actual = actual.Siguiente;
+            }
+
+            while (!listaTemp.EstaVacia)
+            {
+                NodoMensaje? primeroTemp = listaTemp.GetPrimero();
+                if (primeroTemp != null)
                 {
-                    ordenada.Agregar(mensajeActual);
-                }
-                else
-                {
-                    NodoMensaje? actualOrdenada = ordenada.primero;
-                    int posicion = 0;
-                    bool insertado = false;
-                    
-                    while (actualOrdenada != null && !insertado)
-                    {
-                        if (string.Compare(mensajeActual.Nombre, actualOrdenada.Data.Nombre) < 0)
-                        {
-                            ordenada.Insertar(posicion, mensajeActual);
-                            insertado = true;
-                        }
-                        actualOrdenada = actualOrdenada.Siguiente;
-                        posicion++;
-                    }
-                    
-                    if (!insertado)
+                    Mensaje mensajeActual = primeroTemp.Data;
+                    listaTemp.Eliminar(mensajeActual.Nombre);
+
+                    if (ordenada.primero == null)
                     {
                         ordenada.Agregar(mensajeActual);
                     }
+                    else
+                    {
+                        NodoMensaje? nodoOrden = ordenada.primero;
+                        NodoMensaje? anterior = null;
+                        bool insertado = false;
+
+                        while (nodoOrden != null && !insertado)
+                        {
+                            if (string.Compare(mensajeActual.Nombre, nodoOrden.Data.Nombre) < 0)
+                            {
+                                NodoMensaje nuevo = new NodoMensaje(mensajeActual);
+                                if (anterior == null)
+                                {
+                                    nuevo.Siguiente = ordenada.primero;
+                                    ordenada.primero = nuevo;
+                                }
+                                else
+                                {
+                                    nuevo.Siguiente = anterior.Siguiente;
+                                    anterior.Siguiente = nuevo;
+                                }
+                                ordenada.count++;
+                                insertado = true;
+                            }
+                            anterior = nodoOrden;
+                            nodoOrden = nodoOrden.Siguiente;
+                        }
+
+                        if (!insertado)
+                        {
+                            ordenada.Agregar(mensajeActual);
+                        }
+                    }
                 }
-                
-                actual = actual.Siguiente;
             }
 
             return ordenada;
@@ -160,18 +181,86 @@ namespace Proyecto2.TDAs
             return true;
         }
 
-        public void ParaCada(Action<Mensaje> accion)
+        // Reemplazamos ParaCada con métodos específicos
+        /* public void MostrarTodos(Action<Mensaje> accion)
+         {
+             NodoMensaje? actual = primero;
+             while (actual != null)
+             {
+                 accion(actual.Data);
+                 actual = actual.Siguiente;
+             }
+         }*/
+
+        // Eliminar el método MostrarTodos que usa Action<Mensaje>
+
+        // En su lugar, usar métodos específicos:
+        public string ObtenerListadoCompleto()
         {
+            string resultado = "";
+            NodoMensaje? actual = primero;
+            int indice = 1;
+            while (actual != null)
+            {
+                resultado += $"{indice}. {actual.Data.Nombre} - Instrucciones: {actual.Data.Instrucciones.Count}\n";
+                actual = actual.Siguiente;
+                indice++;
+            }
+            return resultado;
+        }
+
+        public string ObtenerResumenMensajes()
+        {
+            string resultado = "=== LISTA DE MENSAJES ===\n";
             NodoMensaje? actual = primero;
             while (actual != null)
             {
-                accion(actual.Data);
+                resultado += $"Nombre: {actual.Data.Nombre}\n";
+                resultado += $"Texto: {actual.Data.TextoOriginal}\n";
+                resultado += $"Instrucciones: {actual.Data.Instrucciones.Count}\n";
+                resultado += "------------------------\n";
                 actual = actual.Siguiente;
             }
+            return resultado;
+        }
+
+        public void EjecutarEnCadaMensaje(Action<Mensaje> accion)
+        {
+            // Este método aún tiene Action<Mensaje> - también es genérico
+            // Mejor evitarlo y usar métodos específicos
+        }
+
+        // Método para obtener todos los nombres como string
+        public string ObtenerNombresComoString()
+        {
+            string resultado = "";
+            NodoMensaje? actual = primero;
+            while (actual != null)
+            {
+                resultado += actual.Data.Nombre;
+                if (actual.Siguiente != null)
+                    resultado += ", ";
+                actual = actual.Siguiente;
+            }
+            return resultado;
+        }
+
+        // Método para contar mensajes con un texto específico
+        public int ContarMensajesConTexto(string texto)
+        {
+            int contador = 0;
+            NodoMensaje? actual = primero;
+            while (actual != null)
+            {
+                if (actual.Data.TextoOriginal == texto)
+                    contador++;
+                actual = actual.Siguiente;
+            }
+            return contador;
         }
 
         public int Count { get { return count; } }
-        
+
         public bool EstaVacia { get { return count == 0; } }
 
         public NodoMensaje? GetPrimero()

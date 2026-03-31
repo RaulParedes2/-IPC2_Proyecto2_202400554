@@ -90,7 +90,7 @@ namespace Proyecto2.TDAs
         }
 
         public int Count { get { return count; } }
-        
+
         public bool EstaVacia { get { return count == 0; } }
 
         public NodoSistemaDrones? GetPrimero()
@@ -112,6 +112,73 @@ namespace Proyecto2.TDAs
                 accion(actual.Data);
                 actual = actual.Siguiente;
             }
+        }
+        public ListaSistemasDrones ObtenerOrdenadosAlfabeticamente()
+        {
+            ListaSistemasDrones ordenada = new ListaSistemasDrones();
+
+            if (primero == null)
+                return ordenada;
+
+            // Copiar todos los nodos a una nueva lista temporal
+            ListaSistemasDrones listaTemp = new ListaSistemasDrones();
+            NodoSistemaDrones? actual = primero;
+            while (actual != null)
+            {
+                listaTemp.Agregar(actual.Data);
+                actual = actual.Siguiente;
+            }
+
+            // Ordenamiento por inserción usando solo nodos (sin arreglos)
+            while (!listaTemp.EstaVacia)
+            {
+                NodoSistemaDrones? primeroTemp = listaTemp.GetPrimero();
+                if (primeroTemp != null)
+                {
+                    SistemaDrones sistemaActual = primeroTemp.Data;
+                    listaTemp.Eliminar(sistemaActual.Nombre);
+
+                    if (ordenada.primero == null)
+                    {
+                        ordenada.Agregar(sistemaActual);
+                    }
+                    else
+                    {
+                        NodoSistemaDrones? nodoOrden = ordenada.primero;
+                        NodoSistemaDrones? anterior = null;
+                        bool insertado = false;
+
+                        while (nodoOrden != null && !insertado)
+                        {
+                            if (string.Compare(sistemaActual.Nombre, nodoOrden.Data.Nombre) < 0)
+                            {
+                                NodoSistemaDrones nuevo = new NodoSistemaDrones(sistemaActual);
+                                if (anterior == null)
+                                {
+                                    nuevo.Siguiente = ordenada.primero;
+                                    ordenada.primero = nuevo;
+                                }
+                                else
+                                {
+                                    nuevo.Siguiente = anterior.Siguiente;
+                                    anterior.Siguiente = nuevo;
+                                }
+                                ordenada.count++;
+                                insertado = true;
+                            }
+                            anterior = nodoOrden;
+                            nodoOrden = nodoOrden.Siguiente;
+                        }
+
+                        if (!insertado)
+                        {
+                            ordenada.Agregar(sistemaActual);
+                        }
+                    }
+                }
+            }
+
+            return ordenada;
         }
     }
 }

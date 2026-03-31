@@ -2,7 +2,6 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using Microsoft.AspNetCore.Hosting;
-using Proyecto2.Controllers;
 using Proyecto2.Models;
 using Proyecto2.TDAs;
 
@@ -21,61 +20,85 @@ namespace Proyecto2.Services
 
         private string FindGraphvizPath()
         {
-            // Rutas comunes de instalación de Graphviz en Windows
-            string[] possiblePaths = new string[]
-            {
-        @"C:\Program Files\Graphviz\bin\dot.exe",
-        @"C:\Program Files (x86)\Graphviz\bin\dot.exe",
-        @"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Graphviz\bin\dot.exe",
-        @"C:\Users\" + Environment.UserName + @"\AppData\Local\Graphviz\bin\dot.exe"
-            };
+            // Usar lista enlazada para las rutas posibles
+            ListaRutas rutas = new ListaRutas();
+            rutas.Agregar(@"C:\Program Files\Graphviz\bin\dot.exe");
+            rutas.Agregar(@"C:\Program Files (x86)\Graphviz\bin\dot.exe");
+            rutas.Agregar(@"C:\Users\" + Environment.UserName + @"\AppData\Local\Programs\Graphviz\bin\dot.exe");
+            rutas.Agregar(@"C:\Users\" + Environment.UserName + @"\AppData\Local\Graphviz\bin\dot.exe");
 
-            foreach (string path in possiblePaths)
+            ListaRutas.NodoRuta? actual = rutas.GetPrimero();
+            while (actual != null)
             {
-                if (File.Exists(path))
+                if (File.Exists(actual.Data))
                 {
-                    Console.WriteLine($"Graphviz encontrado en: {path}");
-                    return path;
+                    Console.WriteLine($"Graphviz encontrado en: {actual.Data}");
+                    return actual.Data;
                 }
+                actual = actual.Siguiente;
             }
 
             // Buscar en variables de entorno PATH
             string? pathEnv = Environment.GetEnvironmentVariable("PATH");
             if (pathEnv != null)
             {
-                foreach (string dir in pathEnv.Split(';'))
+                ListaDirectorios directorios = new ListaDirectorios();
+                
+                // Parsear PATH manualmente sin usar Split
+                string temp = "";
+                for (int i = 0; i < pathEnv.Length; i++)
                 {
-                    string fullPath = Path.Combine(dir.Trim(), "dot.exe");
+                    if (pathEnv[i] == ';')
+                    {
+                        if (temp.Length > 0)
+                        {
+                            directorios.Agregar(temp.Trim());
+                            temp = "";
+                        }
+                    }
+                    else
+                    {
+                        temp += pathEnv[i];
+                    }
+                }
+                if (temp.Length > 0)
+                {
+                    directorios.Agregar(temp.Trim());
+                }
+
+                ListaDirectorios.NodoDirectorio? dirActual = directorios.GetPrimero();
+                while (dirActual != null)
+                {
+                    string fullPath = Path.Combine(dirActual.Data, "dot.exe");
                     if (File.Exists(fullPath))
                     {
                         Console.WriteLine($"Graphviz encontrado en PATH: {fullPath}");
                         return fullPath;
                     }
+                    dirActual = dirActual.Siguiente;
                 }
             }
 
             Console.WriteLine("Graphviz NO encontrado en el sistema");
-            return "dot"; // Intentar usar el comando directo
+            return "dot";
         }
+
         public string? GenerarImagen(string dotCode, string nombreArchivo)
         {
             try
             {
-                // Crear carpeta temporal si no existe
                 string tempFolder = Path.Combine(_wwwrootPath, "temp");
                 if (!Directory.Exists(tempFolder))
                 {
                     Directory.CreateDirectory(tempFolder);
                 }
 
-                // Guardar el código DOT en un archivo temporal
                 string dotFilePath = Path.Combine(tempFolder, $"{nombreArchivo}.dot");
                 string pngFilePath = Path.Combine(tempFolder, $"{nombreArchivo}.png");
                 string relativePath = $"/temp/{nombreArchivo}.png";
 
                 File.WriteAllText(dotFilePath, dotCode);
 
-                // Ejecutar Graphviz para generar la imagen
                 ProcessStartInfo startInfo = new ProcessStartInfo
                 {
                     FileName = _graphvizPath,
@@ -102,7 +125,6 @@ namespace Proyecto2.Services
                     }
                 }
 
-                // Eliminar el archivo .dot temporal
                 if (File.Exists(dotFilePath))
                 {
                     File.Delete(dotFilePath);
@@ -124,12 +146,13 @@ namespace Proyecto2.Services
             {
                 try
                 {
-                    foreach (var file in Directory.GetFiles(tempFolder))
+                    string[] archivos = Directory.GetFiles(tempFolder);
+                    for (int i = 0; i < archivos.Length; i++)
                     {
-                        var fileInfo = new FileInfo(file);
+                        FileInfo fileInfo = new FileInfo(archivos[i]);
                         if (fileInfo.CreationTime < DateTime.Now.AddHours(-1))
                         {
-                            File.Delete(file);
+                            File.Delete(archivos[i]);
                         }
                     }
                 }
@@ -154,7 +177,6 @@ namespace Proyecto2.Services
                 string pngFilePath = Path.Combine(tempFolder, $"{nombreArchivo}.png");
                 string relativePath = $"/temp/{nombreArchivo}.png";
 
-                // Generar codigo DOT para tabla HTML
                 string dotCode = GenerarDotTabla(sistema);
                 File.WriteAllText(dotFilePath, dotCode);
 
@@ -200,12 +222,10 @@ namespace Proyecto2.Services
 
         private string GenerarDotTabla(SistemaDrones sistema)
         {
-            // Obtener drones ordenados alfabéticamente
             ListaDrones dronesOrdenados = sistema.Drones.ObtenerOrdenadosAlfabeticamente();
 
-            // Encontrar la altura máxima que tiene codificación
             int alturaMaxima = 0;
-            var celda = sistema.Codificacion.GetPrimero();
+            TablaCodificacion.CeldaCodificacion? celda = sistema.Codificacion.GetPrimero();
             while (celda != null)
             {
                 if (celda.Altura > alturaMaxima)
@@ -230,7 +250,6 @@ namespace Proyecto2.Services
             dot += "        <tr>\n";
             dot += "        <td bgcolor=\"lightblue\"><b>Altura (mts)</b></td>\n";
 
-            // Agregar columnas de drones en orden alfabético
             NodoDron? dronActual = dronesOrdenados.GetPrimero();
             while (dronActual != null)
             {
@@ -239,7 +258,6 @@ namespace Proyecto2.Services
             }
             dot += "        </tr>\n";
 
-            // Agregar filas de alturas
             for (int altura = 1; altura <= alturaMaxima; altura++)
             {
                 dot += "        <tr>\n";
@@ -350,11 +368,10 @@ namespace Proyecto2.Services
             dot += "        <tr>\n";
             dot += "        <td bgcolor=\"lightblue\"><b>Tiempo (seg)</b></td>\n";
 
-            // Obtener todos los nombres de drones del plan
-            var primerosSegundos = plan.GetPrimero();
+            PlanVuelo.NodoSegundo? primerosSegundos = plan.GetPrimero();
             if (primerosSegundos != null)
             {
-                var acciones = primerosSegundos.Data.Acciones.GetPrimero();
+                PlanVuelo.NodoAccionDron? acciones = primerosSegundos.Data.Acciones.GetPrimero();
                 while (acciones != null)
                 {
                     dot += $"        <td bgcolor=\"lightblue\"><b>{acciones.Data.NombreDron}</b></td>\n";
@@ -363,7 +380,6 @@ namespace Proyecto2.Services
             }
             dot += "        </tr>\n";
 
-            // Agregar filas por cada segundo
             PlanVuelo.NodoSegundo? actual = plan.GetPrimero();
             while (actual != null)
             {
@@ -373,10 +389,10 @@ namespace Proyecto2.Services
                 PlanVuelo.NodoAccionDron? accionActual = actual.Data.Acciones.GetPrimero();
                 while (accionActual != null)
                 {
-                    string accion = accionActual.Data.Accion.ToString();
+                    string accion = accionActual.Data.Accion;
                     string bgColor = "";
 
-                    if (accion == "EmitirLuz")
+                    if (accion == "Emitir Luz")
                     {
                         bgColor = "bgcolor=\"lightgreen\"";
                     }
